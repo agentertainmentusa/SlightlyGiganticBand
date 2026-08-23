@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy Policy for Slightly Gigantic, including SMS Text Club privacy terms.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Privacy Policy | Slightly Gigantic</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --page-bg: #0a0a0a;
+      --panel: rgba(16, 16, 16, .9);
+      --text: #f1f1f1;
+      --muted: #b6b1ad;
+      --soft: rgba(255,255,255,.07);
+      --line: rgba(255,255,255,.16);
+      --orange: #f26a1a;
+      --orange-bright: #ff8a3d;
+      --orange-glow: rgba(242,106,26,.22);
+      --display: "Bebas Neue", Impact, "Arial Narrow Bold", sans-serif;
+      --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--page-bg); scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 50% -18%, rgba(242,106,26,.12), transparent 43rem),
+        linear-gradient(180deg, #100b08 0, var(--page-bg) 28rem);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; }
+    a:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+    .shell { width: min(100% - 40px, 720px); margin: 0 auto; padding: 28px 0 42px; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .16s ease, transform .16s ease;
+    }
+    .back-link:hover { color: var(--orange-bright); transform: translateX(-2px); }
+    .masthead { padding: 54px 0 40px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    h1, h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; }
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(50px, 10vw, 82px);
+      letter-spacing: .035em;
+      line-height: .92;
+    }
+    .updated { margin: 18px 0 0; color: var(--muted); font-size: 14px; }
+    main { padding-top: 38px; }
+    section { padding: 0 0 34px; }
+    h2 {
+      margin: 0 0 12px;
+      color: var(--orange);
+      font-size: clamp(28px, 5vw, 40px);
+      letter-spacing: .035em;
+      line-height: 1;
+    }
+    h3 { margin: 18px 0 6px; color: #fff; font-size: 16px; font-weight: 800; }
+    p { margin: 0 0 15px; max-width: 68ch; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 15px; padding-left: 22px; }
+    li { margin: 7px 0; padding-left: 4px; }
+    strong { color: #fff; font-weight: 800; }
+    .sms-privacy {
+      margin-top: 6px;
+      padding: 26px;
+      border: 1px solid rgba(242,106,26,.55);
+      background: linear-gradient(135deg, rgba(242,106,26,.10), rgba(255,255,255,.025));
+      box-shadow: 0 10px 36px var(--orange-glow);
+    }
+    .sms-privacy h2 { margin-bottom: 14px; }
+    .sms-privacy ul { margin-bottom: 0; }
+    .important { color: #fff; font-weight: 800; }
+    .email-link { color: var(--orange-bright); font-weight: 700; text-decoration-color: rgba(255,138,61,.5); text-underline-offset: 3px; }
+    .email-link:hover { color: #fff; }
+    footer {
+      margin-top: 12px;
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    footer .footer-mark {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 auto;
+      background: url("images/logo-256.png") center / contain no-repeat;
+      opacity: .45;
+    }
+    footer .footer-text { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+    footer .small { color: rgba(255,255,255,.32); font-size: 10px; letter-spacing: .08em; }
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 28px, 720px); padding-top: 18px; }
+      .masthead { padding: 42px 0 32px; }
+      main { padding-top: 32px; }
+      section { padding-bottom: 30px; }
+      .sms-privacy { padding: 21px 18px; }
+      footer { gap: 14px; }
+      footer .footer-mark { width: 44px; height: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="back-link" href="/" aria-label="Return to the Slightly Gigantic homepage">← Back to Slightly Gigantic</a>
+
+    <header class="masthead">
+      <p class="eyebrow">Slightly Gigantic</p>
+      <h1>Privacy Policy</h1>
+      <p class="updated">Effective date: August 21, 2026</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Introduction</h2>
+        <p>Slightly Gigantic, operated by A.G. Entertainment, respects your privacy. This Privacy Policy explains what information we collect through slightlygiganticband.com, how we use it, and the choices available to you.</p>
+      </section>
+
+      <section>
+        <h2>Information We Collect</h2>
+        <h3>Contact form</h3>
+        <p>When you contact us through the Site, we may collect your name, email address, and the content of your message.</p>
+        <h3>Text Club</h3>
+        <p>When you join the Slightly Gigantic Text Club, we collect your phone number and first name. You may also choose to provide your last name, email address, and state.</p>
+        <h3>Website analytics</h3>
+        <p>We may collect anonymized information about page views and referral sources to understand how visitors use the Site. This information does not include personally identifiable information.</p>
+      </section>
+
+      <section>
+        <h2>How We Use Your Information</h2>
+        <ul>
+          <li>To respond to your inquiries and requests;</li>
+          <li>To send promotional SMS messages, when you have opted in, about shows, tour dates, new music, and related offers;</li>
+          <li>To improve the Site and its content; and</li>
+          <li>To communicate important updates about the Band, the Site, or services you requested.</li>
+        </ul>
+      </section>
+
+      <section class="sms-privacy" aria-labelledby="sms-privacy-title">
+        <h2 id="sms-privacy-title">SMS-Specific Privacy Terms</h2>
+        <ul>
+          <li>We collect phone numbers only when you voluntarily opt in to receive messages.</li>
+          <li><span class="important">No mobile information will be shared with third parties or affiliates for marketing or promotional purposes at any time.</span></li>
+          <li>Text messages are sent through EZ Texting, which is contractually bound to protect your data.</li>
+          <li>You may opt out at any time by texting <strong>STOP</strong> to any of our messages.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>How We Share Information</h2>
+        <ul>
+          <li>We do <strong>not</strong> sell your personal information.</li>
+          <li>We share information only with service providers that help us operate the Site and related services, including EZ Texting, Supabase, Vercel, and Formspree, and only as needed for those purposes.</li>
+          <li>We may disclose information when required by law, including in response to a valid court order or subpoena.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Data Retention</h2>
+        <p>We retain personal information for as long as needed to carry out the purposes described in this Policy, comply with legal obligations, resolve disputes, or until you request deletion where applicable.</p>
+      </section>
+
+      <section>
+        <h2>Your Rights</h2>
+        <p>You may request access to, correction of, or deletion of your personal information by emailing <a class="email-link" href="mailto:tony@agentertainmentusa.com">tony@agentertainmentusa.com</a>. California residents may have additional rights under the California Consumer Privacy Act (CCPA), and residents of the European Union may have additional rights under the General Data Protection Regulation (GDPR).</p>
+      </section>
+
+      <section>
+        <h2>Children’s Privacy</h2>
+        <p>The Site is not directed to children under 13, and we do not knowingly collect personal information from children under 13. If you believe that a child has provided us personal information, please contact us so that we can take appropriate action.</p>
+      </section>
+
+      <section>
+        <h2>Cookies</h2>
+        <p>The Site uses minimal cookies, including session cookies for the admin panel. We do not use advertising cookies or tracking cookies.</p>
+      </section>
+
+      <section>
+        <h2>Security</h2>
+        <p>We use reasonable safeguards designed to protect the information we collect. However, no method of transmission over the internet or method of storage is completely secure, and we cannot guarantee absolute security.</p>
+      </section>
+
+      <section>
+        <h2>Third-Party Links</h2>
+        <p>The Site may link to external services, including Instagram, Spotify, and other platforms. Those services have their own privacy policies, and we are not responsible for their privacy practices.</p>
+      </section>
+
+      <section>
+        <h2>Changes</h2>
+        <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page with a new effective date. Your continued use of the Site after changes are posted is subject to the updated Policy.</p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>For privacy questions or requests, email <a class="email-link" href="mailto:tony@agentertainmentusa.com">tony@agentertainmentusa.com</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-mark" aria-hidden="true"></div>
+      <div class="footer-text">
+        <span>© 2026 Slightly Gigantic</span>
+        <span class="small">All rights reserved</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

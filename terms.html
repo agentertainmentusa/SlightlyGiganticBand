@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Terms of Service for Slightly Gigantic, including Text Club SMS messaging terms.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Terms of Service | Slightly Gigantic</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --page-bg: #0a0a0a;
+      --panel: rgba(16, 16, 16, .9);
+      --text: #f1f1f1;
+      --muted: #b6b1ad;
+      --soft: rgba(255,255,255,.07);
+      --line: rgba(255,255,255,.16);
+      --orange: #f26a1a;
+      --orange-bright: #ff8a3d;
+      --orange-glow: rgba(242,106,26,.22);
+      --display: "Bebas Neue", Impact, "Arial Narrow Bold", sans-serif;
+      --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--page-bg); scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 50% -18%, rgba(242,106,26,.12), transparent 43rem),
+        linear-gradient(180deg, #100b08 0, var(--page-bg) 28rem);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; }
+    a:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+    .shell { width: min(100% - 40px, 720px); margin: 0 auto; padding: 28px 0 42px; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .16s ease, transform .16s ease;
+    }
+    .back-link:hover { color: var(--orange-bright); transform: translateX(-2px); }
+    .masthead { padding: 54px 0 40px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    h1, h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; }
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(50px, 10vw, 82px);
+      letter-spacing: .035em;
+      line-height: .92;
+    }
+    .updated { margin: 18px 0 0; color: var(--muted); font-size: 14px; }
+    main { padding-top: 38px; }
+    section { padding: 0 0 34px; }
+    h2 {
+      margin: 0 0 12px;
+      color: var(--orange);
+      font-size: clamp(28px, 5vw, 40px);
+      letter-spacing: .035em;
+      line-height: 1;
+    }
+    p { margin: 0 0 15px; max-width: 68ch; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 15px; padding-left: 22px; }
+    li { margin: 7px 0; padding-left: 4px; }
+    strong { color: #fff; font-weight: 800; }
+    .sms-terms {
+      margin-top: 6px;
+      padding: 26px;
+      border: 1px solid rgba(242,106,26,.55);
+      background: linear-gradient(135deg, rgba(242,106,26,.10), rgba(255,255,255,.025));
+      box-shadow: 0 10px 36px var(--orange-glow);
+    }
+    .sms-terms h2 { margin-bottom: 14px; }
+    .sms-terms ul { margin-bottom: 0; }
+    .email-link, .inline-link { color: var(--orange-bright); font-weight: 700; text-decoration-color: rgba(255,138,61,.5); text-underline-offset: 3px; }
+    .email-link:hover, .inline-link:hover { color: #fff; }
+    footer {
+      margin-top: 12px;
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    footer .footer-mark {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 auto;
+      background: url("images/logo-256.png") center / contain no-repeat;
+      opacity: .45;
+    }
+    footer .footer-text { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+    footer .small { color: rgba(255,255,255,.32); font-size: 10px; letter-spacing: .08em; }
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 28px, 720px); padding-top: 18px; }
+      .masthead { padding: 42px 0 32px; }
+      main { padding-top: 32px; }
+      section { padding-bottom: 30px; }
+      .sms-terms { padding: 21px 18px; }
+      footer { gap: 14px; }
+      footer .footer-mark { width: 44px; height: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="back-link" href="/" aria-label="Return to the Slightly Gigantic homepage">← Back to Slightly Gigantic</a>
+
+    <header class="masthead">
+      <p class="eyebrow">Slightly Gigantic</p>
+      <h1>Terms of Service</h1>
+      <p class="updated">Last updated: August 21, 2026</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Acceptance of Terms</h2>
+        <p>By accessing or using slightlygiganticband.com (the “Site”), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Site.</p>
+      </section>
+
+      <section>
+        <h2>About Slightly Gigantic</h2>
+        <p>This Site is operated by A.G. Entertainment on behalf of the Slightly Gigantic band (the “Band”). Questions about these Terms may be sent to <a class="email-link" href="mailto:tony@agentertainmentusa.com">tony@agentertainmentusa.com</a>.</p>
+      </section>
+
+      <section>
+        <h2>Use of the Site</h2>
+        <p>You may browse and use this Site for personal, non-commercial purposes. You may not:</p>
+        <ul>
+          <li>Collect, extract, or otherwise copy Site content through automated means or in a manner that interferes with the Site;</li>
+          <li>Reverse engineer, decompile, or attempt to discover the Site’s source code or underlying systems;</li>
+          <li>Attempt to access administrative, restricted, or non-public areas of the Site; or</li>
+          <li>Use the Site in any unlawful, harmful, fraudulent, or abusive manner.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Intellectual Property</h2>
+        <p>All music, images, logos, videos, text, graphics, and other content on the Site are owned by or licensed to Slightly Gigantic and/or A.G. Entertainment and are protected by applicable intellectual property laws. Unless we give you prior written permission, you may not reproduce, distribute, modify, display, or otherwise use that content.</p>
+      </section>
+
+      <section>
+        <h2>User Submissions</h2>
+        <p>Anything you submit to us through the contact form, Text Club, or other channels may be used by the Band for internal communications, promotional purposes, and to respond to your inquiry. You represent that any content you submit is your own or that you have the right to submit it.</p>
+      </section>
+
+      <section class="sms-terms" aria-labelledby="sms-terms-title">
+        <h2 id="sms-terms-title">SMS Messaging Terms</h2>
+        <p><strong>Program name:</strong> Slightly Gigantic Text Club.</p>
+        <p><strong>Program description:</strong> Fans who opt in may receive text messages from Slightly Gigantic about upcoming shows, tour dates, new music releases, and promotional offers.</p>
+        <ul>
+          <li><strong>Message frequency:</strong> Up to 4 messages per month; frequency may vary.</li>
+          <li><strong>Charges:</strong> Message and data rates may apply.</li>
+          <li><strong>Help and opt-out:</strong> Reply <strong>HELP</strong> for help. Reply <strong>STOP</strong> to unsubscribe at any time.</li>
+          <li><strong>How to join:</strong> Enrollment occurs through double opt-in on slightlygiganticband.com.</li>
+          <li><strong>Carrier notice:</strong> Carriers are not liable for delayed or undelivered messages.</li>
+          <li><strong>Supported carriers:</strong> All major U.S. carriers, including AT&amp;T, T-Mobile, Verizon, US Cellular, and others.</li>
+          <li><strong>Program availability:</strong> The program is offered on an “as is” basis and may be modified, suspended, or discontinued as permitted by law.</li>
+          <li><strong>Voluntary consent:</strong> Consent to receive text messages is not a condition of any purchase.</li>
+          <li><strong>Questions:</strong> Contact <a class="email-link" href="mailto:tony@agentertainmentusa.com">tony@agentertainmentusa.com</a>.</li>
+        </ul>
+        <p>For information about how we handle personal information, please read our <a class="inline-link" href="/privacy">Privacy Policy</a>.</p>
+      </section>
+
+      <section>
+        <h2>Third-Party Services</h2>
+        <p>The Site uses third-party services, including EZ Texting for SMS messaging, Supabase for database services, Vercel for hosting, and Formspree for form handling. Your use of those services may also be subject to their respective terms and policies.</p>
+      </section>
+
+      <section>
+        <h2>Disclaimer of Warranties</h2>
+        <p>The Site and its content are provided on an “as is” and “as available” basis without warranties of any kind, whether express, implied, or statutory. We do not warrant that the Site will be uninterrupted, secure, error-free, or free of harmful components.</p>
+      </section>
+
+      <section>
+        <h2>Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, A.G. Entertainment and the Band will not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages arising out of or related to your use of, or inability to use, the Site.</p>
+      </section>
+
+      <section>
+        <h2>Governing Law</h2>
+        <p>These Terms are governed by the laws of the State of Wisconsin, without regard to conflict-of-law principles. Any dispute relating to these Terms or the Site shall be brought in the state or federal courts located in Waukesha County, Wisconsin, as applicable.</p>
+      </section>
+
+      <section>
+        <h2>Changes to Terms</h2>
+        <p>We may update these Terms from time to time. Changes will be posted on this page with a revised “Last updated” date. Your continued use of the Site after an update means that you accept the updated Terms.</p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>For questions about these Terms, email <a class="email-link" href="mailto:tony@agentertainmentusa.com">tony@agentertainmentusa.com</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-mark" aria-hidden="true"></div>
+      <div class="footer-text">
+        <span>© 2026 Slightly Gigantic</span>
+        <span class="small">All rights reserved</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

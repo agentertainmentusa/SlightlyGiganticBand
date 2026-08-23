@@ -1,0 +1,2600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Slightly Gigantic — Official Band Website</title>
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="apple-touch-icon" sizes="256x256" href="images/logo-256.png">
+<meta name="description" content="Slightly Gigantic — official band website. Bio, music, photos, merch, and booking." />
+<meta name="theme-color" content="#e10b1e" />
+
+<!-- Open Graph (Facebook, iMessage, LinkedIn, Discord, Slack) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Slightly Gigantic" />
+<meta property="og:title" content="Slightly Gigantic — Official Band Website" />
+<meta property="og:description" content="Piano-driven stadium pop from Wisconsin. Music, photos, tour dates, merch, and booking." />
+<meta property="og:url" content="https://slightlygiganticband.com/" />
+<meta property="og:image" content="https://slightlygiganticband.com/images/og-preview.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Slightly Gigantic logo on a concert stage" />
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Slightly Gigantic — Official Band Website" />
+<meta name="twitter:description" content="Piano-driven stadium pop from Wisconsin. Music, photos, tour dates, merch, and booking." />
+<meta name="twitter:image" content="https://slightlygiganticband.com/images/og-preview.jpg" />
+<meta name="twitter:image:alt" content="Slightly Gigantic logo on a concert stage" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20260715a">
+<style>
+  :root {
+    --bg: #0a0606;
+    --panel: rgba(0,0,0,0.55);
+    --panel-strong: rgba(0,0,0,0.78);
+    --line: rgba(255,255,255,0.18);
+    --line-strong: rgba(255,255,255,0.32);
+    --text: #f1f1f1;
+    --muted: #b6b1ad;
+    --red: #e21e26;
+    --red-bright: #ff2b32;
+    --red-glow: rgba(226,30,38,0.55);
+    --shadow: 0 22px 60px rgba(0,0,0,0.55);
+    --display: "Bebas Neue", Impact, "Arial Narrow Bold", sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--body);
+    color: var(--text);
+    min-height: 100dvh;
+    background: #000;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; max-width: 100%; height: auto; }
+  button { font: inherit; cursor: pointer; background: none; border: 0; color: inherit; }
+
+  /* === Fullscreen concert backdrop === */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: url("images/stage-bg.png");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+  .backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.78) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.95) 100%);
+    pointer-events: none;
+  }
+
+  /* === Animated stage spotlights (overlay on the backdrop image) === */
+  .spotlights {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    /* The hero photo is roughly the top ~60vh; keep beams within that area */
+    mix-blend-mode: screen;   /* additive look against the dark photo */
+    z-index: 0;
+  }
+  .beam {
+    position: absolute;
+    top: -6%;                 /* originate just above the rig */
+    width: 22vw;
+    min-width: 180px;
+    max-width: 380px;
+    height: 70vh;
+    min-height: 380px;
+    /* Soft cone of light: narrow & bright at the top, wide & faint at the bottom */
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(255,255,255,0.28) 20%,
+      rgba(255,255,255,0.10) 55%,
+      rgba(255,255,255,0.00) 100%
+    );
+    /* Triangle/cone silhouette */
+    clip-path: polygon(46% 0%, 54% 0%, 96% 100%, 4% 100%);
+    filter: blur(14px);
+    transform-origin: 50% 0%;
+    will-change: transform, opacity;
+    opacity: 0.85;
+  }
+  /* Four beams across the rig, each with its own slow sway timing */
+  .beam-1 { left:  6%;  animation: beamSway1 11s ease-in-out infinite; }
+  .beam-2 { left: 28%;  animation: beamSway2 14s ease-in-out infinite; }
+  .beam-3 { left: 50%;  animation: beamSway3 12s ease-in-out infinite; }
+  .beam-4 { left: 72%;  animation: beamSway4 15s ease-in-out infinite; }
+
+  @keyframes beamSway1 {
+    0%   { transform: rotate(-10deg); opacity: 0.65; }
+    50%  { transform: rotate( 10deg); opacity: 0.95; }
+    100% { transform: rotate(-10deg); opacity: 0.65; }
+  }
+  @keyframes beamSway2 {
+    0%   { transform: rotate(  8deg); opacity: 0.80; }
+    50%  { transform: rotate( -8deg); opacity: 0.55; }
+    100% { transform: rotate(  8deg); opacity: 0.80; }
+  }
+  @keyframes beamSway3 {
+    0%   { transform: rotate( -6deg); opacity: 0.90; }
+    50%  { transform: rotate(  6deg); opacity: 0.70; }
+    100% { transform: rotate( -6deg); opacity: 0.90; }
+  }
+  @keyframes beamSway4 {
+    0%   { transform: rotate( 12deg); opacity: 0.60; }
+    50%  { transform: rotate(-12deg); opacity: 0.90; }
+    100% { transform: rotate( 12deg); opacity: 0.60; }
+  }
+
+  /* Respect users who prefer no motion */
+  @media (prefers-reduced-motion: reduce) {
+    .beam { animation: none; opacity: 0.7; }
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+  }
+
+  /* === Hero title (massive, distressed) === */
+  .hero {
+    text-align: center;
+    padding: 40px 0 18px;
+  }
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(72px, 13vw, 200px);
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-transform: uppercase;
+    color: #ebe7e3;
+    /* concrete/distressed look via layered shadows + a noisy mask */
+    text-shadow:
+      0 2px 0 rgba(0,0,0,0.6),
+      0 4px 22px rgba(0,0,0,0.85),
+      0 0 60px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  .hero-title .line { display: block; }
+
+  /* === Hero illustrated logo (replaces the giant text headline) === */
+  .hero-logo {
+    /* Override the text-only headline styling so the image sits cleanly */
+    text-shadow: none;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    font-size: 0;        /* kill the inherited huge font box */
+  }
+  .hero-logo::before { content: none; }   /* drop the grit pattern overlay */
+  .hero-logo-img, .hero-logo-video {
+    display: block;
+    margin: 0 auto;
+    width: clamp(260px, 42vw, 560px);
+    height: auto;
+    filter:
+      drop-shadow(0 0 22px rgba(226,30,38,0.35))
+      drop-shadow(0 8px 30px rgba(0,0,0,0.7));
+  }
+  /* Hide the source video off-screen — the canvas below renders the visible frames
+     with black pixels replaced by transparent via JS chromakey. This works on every
+     browser (iOS Safari, Android, desktop) without relying on alpha video formats. */
+  .hero-logo-video {
+    position: absolute;
+    left: -99999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero-logo-canvas {
+    display: block;
+    margin: 0 auto;
+    width: clamp(260px, 42vw, 560px);
+    height: auto;
+    pointer-events: none;
+    filter:
+      drop-shadow(0 0 22px rgba(226,30,38,0.35))
+      drop-shadow(0 8px 30px rgba(0,0,0,0.7));
+  }
+  @media (max-width: 720px) {
+    .hero-logo-canvas { width: min(78vw, 420px); }
+  }
+  .hero-logo-img {
+    /* The static PNG already has transparency, so skip the keyer for it */
+    filter:
+      drop-shadow(0 0 22px rgba(226,30,38,0.35))
+      drop-shadow(0 8px 30px rgba(0,0,0,0.7));
+  }
+  @media (max-width: 720px) {
+    .hero-logo-img, .hero-logo-video { width: min(78vw, 420px); }
+  }
+
+  /* Subtle stone/grit overlay on the headline */
+  .hero-title::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.18) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 60%, rgba(0,0,0,0.14) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 40% 80%, rgba(0,0,0,0.12) 0 1.5px, transparent 2.5px),
+      radial-gradient(circle at 85% 25%, rgba(255,255,255,0.05) 0 1px, transparent 2px);
+    background-size: 14px 14px, 11px 11px, 17px 17px, 9px 9px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  .hero-sub {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.32em;
+    font-size: 13px;
+    color: var(--red);
+  }
+  .hero-sub::before, .hero-sub::after {
+    content: "";
+    width: 90px;
+    height: 2px;
+    background: var(--red);
+  }
+
+  /* === Primary nav (icon buttons) === */
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    max-width: 1100px;
+    margin: 32px auto 28px;
+  }
+  .nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 18px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    font-size: 15px;
+    transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    min-height: 56px;
+  }
+  .nav a:hover { border-color: var(--red); background: rgba(40,0,0,0.7); transform: translateY(-1px); }
+  .nav a svg { width: 22px; height: 22px; color: var(--red); }
+
+  /* === Main content grid === */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1fr);
+    gap: 20px;
+    margin-top: 8px;
+  }
+
+  /* === Brand bar (top of every page) === */
+  .brandbar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 4px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 22px;
+  }
+  .brandbar .brand-mark {
+    width: 52px; height: 52px;
+    background: url("images/logo-256.png") center/contain no-repeat;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+    flex-shrink: 0;
+  }
+  .brandbar .brand-text {
+    display: flex; flex-direction: column; line-height: 1; gap: 4px;
+  }
+  .brandbar .brand-name {
+    font-family: var(--display);
+    font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #fff; font-weight: 400;
+  }
+  .brandbar .brand-tag {
+    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--muted); font-weight: 700;
+  }
+  .brandbar .brand-spacer { flex: 1; }
+  .brandbar .brand-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 700;
+    padding: 8px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px;
+    transition: all 0.18s ease;
+  }
+  .brandbar .brand-cta:hover {
+    color: #fff; border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.04);
+  }
+  /* Solid red Text Club button (header) — sits next to Booking */
+  .brandbar .brand-cta.cta-primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .brandbar .brand-cta.cta-primary:hover {
+    background: var(--red-bright, #ff2233);
+    border-color: var(--red-bright, #ff2233);
+    color: #fff;
+  }
+  .brandbar .brand-cta-group {
+    display: inline-flex; gap: 8px; align-items: center;
+  }
+  @media (max-width: 720px) {
+    .brandbar .brand-mark { width: 42px; height: 42px; }
+    .brandbar .brand-name { font-size: 17px; letter-spacing: 0.14em; }
+    .brandbar .brand-tag { font-size: 9px; letter-spacing: 0.24em; }
+    /* On mobile, keep the primary (Text Club) but hide the secondary (Booking)
+       so the header stays tidy. Booking is still reachable via the Contact section. */
+    .brandbar .brand-cta:not(.cta-primary) { display: none; }
+    .brandbar .brand-cta.cta-primary { padding: 6px 10px; font-size: 10px; letter-spacing: 0.14em; }
+  }
+
+  /* Feature / band photo panel */
+  .feature {
+    position: relative;
+    min-height: 460px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background-color: #0c0c0c;
+    background-image: url("images/stage-empty.png");
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.4s ease;
+  }
+  /* When a real band photo is loaded, the photo's alpha is feathered to 0
+     at every edge using a CSS mask, so the rectangle dissolves into the
+     dark page instead of meeting it at a hard line. */
+  .feature.has-photo {
+    border-color: transparent;
+    border-radius: 28px;
+    background-color: transparent;
+    box-shadow: none;
+    /* Combine an X-axis fade and a Y-axis fade. Where either is 0, the
+       photo becomes fully transparent — guaranteeing all four edges blend. */
+    -webkit-mask-image:
+      linear-gradient(to right,  transparent 0%, #000 14%, #000 86%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+            mask-image:
+      linear-gradient(to right,  transparent 0%, #000 14%, #000 86%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+            mask-composite: intersect;
+  }
+  /* edge-fade overlay no longer needed — mask handles the fade */
+  .feature.has-photo .feature-edge-fade { display: none; }
+  /* Faded logo watermark BEHIND any band photo / stage backdrop */
+  .feature::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: url("images/logo-hero.png") center/min(72%, 520px) no-repeat;
+    opacity: 0.10;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.4s ease;
+  }
+  .feature.has-photo { overflow: hidden; }
+  .feature.has-photo::before { opacity: 0.16; }
+  .feature::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 35%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.85) 100%);
+    z-index: 2;
+  }
+  .feature-label {
+    position: relative;
+    z-index: 3;
+    font-family: var(--display);
+    font-size: clamp(40px, 5vw, 72px);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.78);
+    text-align: center;
+    line-height: 0.95;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.85);
+  }
+  /* Logo empty-state: when no band photo is uploaded, show the logo big */
+  .feature.empty .feature-label { display: none; }
+  .feature-logo {
+    position: relative; z-index: 3;
+    width: min(70%, 420px); aspect-ratio: 1/1;
+    background: url("images/logo-hero.png") center/contain no-repeat;
+    opacity: 0.92;
+    filter: drop-shadow(0 8px 30px rgba(0,0,0,0.7));
+    display: none;
+  }
+  .feature.empty .feature-logo { display: block; }
+  .feature.empty::before { opacity: 0; }
+  .feature.empty::after { background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%); }
+  /* Portrait / squarish band photo: letterbox instead of cropping faces.
+     The faded logo watermark + dark vignette fill the letterbox bars so it
+     reads as intentional staging, not empty padding. */
+  .feature.has-photo.portrait-photo {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Give portrait shots more vertical room so they don't look tiny */
+    min-height: 560px;
+  }
+  .feature.has-photo.portrait-photo::after { background: radial-gradient(ellipse at 50% 35%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.25) 70%, rgba(0,0,0,0.55) 100%); }
+  @media (max-width: 760px) {
+    .feature.has-photo.portrait-photo { min-height: 480px; }
+  }
+  /* Landscape band photo: anchor to the top so heads aren't cut off when
+     the panel is shorter than the photo's aspect ratio. */
+  .feature.has-photo:not(.portrait-photo) { background-position: center top; }
+
+  /* Sidebar */
+  .sidebar { display: grid; gap: 20px; }
+
+  .card {
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(0,0,0,0.72);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Merch card */
+  .merch-card { padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .merch-text h3 {
+    font-family: var(--display);
+    font-size: 40px;
+    margin: 0 0 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+  .merch-text p { color: var(--muted); margin: 0 0 14px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; font-weight: 600; line-height: 1.4; }
+  .merch-image {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    background-image: url("images/merch.png?v=20260529c");
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+  }
+
+  /* Red CTA button */
+  .btn-red {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--red);
+    color: #fff;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 14px;
+    border-radius: 2px;
+    transition: background .15s ease, transform .15s ease;
+    box-shadow: 0 4px 18px rgba(226,30,38,0.35);
+  }
+  .btn-red:hover { background: var(--red-bright); transform: translateY(-1px); }
+  .btn-red svg { width: 14px; height: 14px; }
+
+  /* Release card */
+  .release-card { padding: 22px; }
+  .eyebrow {
+    color: var(--red);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .release-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+  .album-art-wrap {
+    width: 130px;
+    height: 130px;
+    position: relative;
+  }
+  .album-art {
+    width: 130px;
+    height: 130px;
+    border-radius: 6px;
+    object-fit: cover;
+    display: block;
+    box-shadow:
+      0 0 22px rgba(226,30,38,0.35),
+      0 8px 24px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+  }
+  .album-disc {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, #1a0606 0%, #050000 60%);
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .album-disc::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 50%;
+    border: 4px solid var(--red);
+    box-shadow:
+      0 0 24px var(--red-glow),
+      0 0 50px rgba(226,30,38,0.35),
+      inset 0 0 22px rgba(226,30,38,0.45);
+  }
+  .album-disc::after {
+    content: "FADE TO RED";
+    position: absolute;
+    bottom: 14px;
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.55);
+  }
+  .release-info h3 {
+    font-family: var(--display);
+    font-size: 36px;
+    margin: 0 0 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+  .release-info .meta {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .stream-list { display: grid; gap: 8px; }
+  .stream-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .stream-link:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.22); }
+  .stream-link .platform-icon {
+    width: 22px; height: 22px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+  }
+  .stream-link .platform-icon svg { width: 14px; height: 14px; }
+  .stream-link .label { flex: 1; }
+  .stream-link .chev { color: rgba(255,255,255,0.55); }
+  .platform-icon.spotify    { background: #1db954; color: #000; }
+  .platform-icon.apple      { background: #fff;    color: #000; }
+  .platform-icon.youtube    { background: #ff0000; color: #fff; }
+  .platform-icon.amazon     { background: #00a8e1; color: #fff; }
+  .platform-icon.soundcloud { background: #ff5500; color: #fff; }
+  .platform-icon.pandora    { background: #3668ff; color: #fff; }
+
+  /* === Social row === */
+  .social-wrap {
+    margin-top: 36px;
+    padding-top: 24px;
+    text-align: center;
+  }
+  .social-rule {
+    display: flex; align-items: center; gap: 18px;
+    justify-content: center; margin-bottom: 18px;
+  }
+  .social-rule::before, .social-rule::after {
+    content: ""; flex: 1; max-width: 320px;
+    height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  }
+  .social-rule span {
+    text-transform: uppercase; letter-spacing: 0.24em;
+    font-weight: 800; font-size: 13px; color: #fff;
+  }
+  .socials { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .socials a {
+    width: 50px; height: 50px;
+    display: grid; place-items: center;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 8px;
+    color: #fff;
+    transition: border-color .15s ease, color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .socials a:hover { border-color: var(--red); color: var(--red); transform: translateY(-2px); }
+  .socials a svg { width: 22px; height: 22px; }
+
+  /* === Inner sections === */
+  .section {
+    margin-top: 36px;
+    padding: 28px;
+    background: rgba(0,0,0,0.78);
+    border: 1px solid rgba(255,255,255,0.18);
+    scroll-margin-top: 24px;
+  }
+  .section h2 {
+    font-family: var(--display);
+    font-size: clamp(36px, 4vw, 56px);
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+  }
+  .section p { color: var(--muted); }
+  .section .eyebrow { margin-bottom: 8px; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+  .stat { padding: 16px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03); border-radius: 4px; }
+  .stat .eyebrow { font-size: 11px; margin-bottom: 6px; }
+  .stat strong { display: block; font-size: 20px; font-weight: 700; }
+
+  .track-list { display: grid; gap: 10px; margin-top: 8px; }
+  .track {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); border-radius: 4px;
+  }
+  .track strong { display: block; font-size: 15px; }
+  .track span { color: var(--muted); font-size: 13px; }
+
+  /* Music releases */
+  .release-grid-section { display: grid; gap: 20px; margin-top: 8px; }
+  .release-card-row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 22px;
+    padding: 20px; border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.03); border-radius: 4px;
+    align-items: start;
+  }
+  .release-card-row .art {
+    width: 100%; aspect-ratio: 1/1; background: #0c0c0c;
+    background-size: cover; background-position: center;
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 4px;
+    position: relative; overflow: hidden;
+  }
+  .release-card-row .art img.art-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block;
+  }
+  .release-card-row .art .play-badge {
+    position: absolute; right: 10px; bottom: 10px;
+    width: 44px; height: 44px; border-radius: 999px;
+    background: var(--red); color: #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 18px rgba(226,30,38,0.45);
+    pointer-events: none;
+  }
+  .release-card-row .art .play-badge svg { width: 18px; height: 18px; }
+  /* When .art is a <button> (because a video is attached), strip default button chrome
+     so it looks identical to the static div version, and add cursor + hover affordance. */
+  .release-card-row button.art-button {
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+  .release-card-row button.art-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(226,30,38,0.25);
+  }
+  .release-card-row button.art-button:hover .play-badge {
+    transform: scale(1.08);
+  }
+  .release-card-row button.art-button:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+  }
+  .release-card-row button.art-button .play-badge {
+    transition: transform 180ms ease;
+  }
+  .release-card-row h3 {
+    font-family: var(--display); font-size: 32px; line-height: 1;
+    letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 6px;
+  }
+  .release-card-row .meta { color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; margin-bottom: 12px; }
+  .release-card-row .desc { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0 0 14px; max-width: 60ch; }
+  .release-card-row .row-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .release-card-row .row-actions .btn-red,
+  .release-card-row .row-actions .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 4px;
+    font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .release-card-row .row-actions .btn-red { background: var(--red); color: #fff; }
+  .release-card-row .row-actions .btn-red:hover { background: var(--red-bright); }
+  .release-card-row .row-actions .btn-ghost { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.18); }
+  .release-card-row .row-actions .btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+  .release-card-row .row-actions svg { width: 14px; height: 14px; }
+  /* Modern streaming pills — rounded, glassy, with per-platform brand color on hover */
+  .release-card-row .stream-mini { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .release-card-row .stream-mini a {
+    --pill-color: #fff;
+    --pill-glow: rgba(255,255,255,0.18);
+    position: relative;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px 8px 11px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 200ms ease, color 180ms ease;
+    will-change: transform;
+  }
+  .release-card-row .stream-mini a::before {
+    content: "";
+    width: 18px; height: 18px;
+    border-radius: 999px;
+    background: var(--pill-color);
+    background-image: var(--pill-icon);
+    background-size: 60% 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset;
+    transition: transform 180ms ease, box-shadow 200ms ease;
+  }
+  .release-card-row .stream-mini a:hover {
+    transform: translateY(-1px);
+    border-color: var(--pill-color);
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+    box-shadow: 0 6px 18px -6px var(--pill-glow);
+  }
+  .release-card-row .stream-mini a:hover::before { transform: scale(1.08); }
+  .release-card-row .stream-mini a:focus-visible {
+    outline: 2px solid var(--pill-color);
+    outline-offset: 3px;
+  }
+  .release-card-row .stream-mini a:active { transform: translateY(0); }
+  /* Per-platform colors used in the dot + hover border + glow */
+  .release-card-row .stream-mini a[data-platform="spotify"]    { --pill-color: #1DB954; --pill-glow: rgba(29,185,84,0.5);  --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M12 0a12 12 0 100 24 12 12 0 000-24zm5.5 17.3a.75.75 0 01-1 .27c-2.76-1.7-6.24-2.07-10.34-1.13a.75.75 0 11-.34-1.46c4.48-1.03 8.32-.6 11.43 1.32.36.22.46.69.25 1zm1.46-3.27a.94.94 0 01-1.27.32c-3.16-1.94-7.97-2.5-11.7-1.37a.94.94 0 11-.55-1.8c4.27-1.3 9.57-.66 13.21 1.6.44.27.58.85.31 1.25zm.13-3.4c-3.78-2.25-10.03-2.46-13.65-1.36a1.12 1.12 0 11-.65-2.15c4.14-1.26 11.04-1.02 15.4 1.57a1.13 1.13 0 11-1.1 1.94z'/></svg>"); }
+  .release-card-row .stream-mini a[data-platform="apple"]      { --pill-color: #fa57c1; --pill-glow: rgba(250,87,193,0.45); --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M19.5 5.5v9.36a3.64 3.64 0 11-1.5-2.94V8.4l-7 1.4v6.7a3.64 3.64 0 11-1.5-2.94V6.3l10-2.05z'/></svg>"); }
+  .release-card-row .stream-mini a[data-platform="amazon"]     { --pill-color: #FF9900; --pill-glow: rgba(255,153,0,0.45);  --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'><path d='M15.7 13.7c-2.5 1.9-6.1 2.9-9.2 2.9-4.4 0-8.3-1.6-11.3-4.3-.2-.2 0-.5.3-.4 3.2 1.9 7.1 3 11.2 3 2.7 0 5.7-.6 8.5-1.7.4-.2.7.3.5.5zm1-1.2c-.3-.4-2.1-.2-2.9-.1-.2 0-.3-.2-.1-.3 1.4-1 3.7-.7 4-.4.3.4-.1 2.6-1.4 3.7-.2.2-.4.1-.3-.1.3-.8.9-2.4.7-2.8z' transform='translate(2 -3)'/><circle cx='8' cy='9' r='3' fill='black'/><circle cx='16' cy='9' r='3' fill='black'/></svg>"); }
+  .release-card-row .stream-mini a[data-platform="soundcloud"] { --pill-color: #FF7700; --pill-glow: rgba(255,119,0,0.45);  --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M2 14a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm3-1a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1zm3-3a1 1 0 011 1v7a1 1 0 11-2 0v-7a1 1 0 011-1zm3-2a1 1 0 011 1v9a1 1 0 11-2 0v-9a1 1 0 011-1zm9 2a4 4 0 11-1 7.87V19a1 1 0 11-2 0V8a4 4 0 015 2z'/></svg>"); }
+  .release-card-row .stream-mini a[data-platform="youtube"]    { --pill-color: #FF0033; --pill-glow: rgba(255,0,51,0.45);   --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><polygon points='10,8 16,12 10,16'/></svg>"); }
+  .release-card-row .stream-mini a[data-platform="pandora"]    { --pill-color: #00A0EE; --pill-glow: rgba(0,160,238,0.45); --pill-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M7 4h7a5 5 0 010 10h-3v6H7V4zm4 3v4h3a2 2 0 100-4h-3z'/></svg>"); }
+  .release-card-row .video-wrap {
+    margin-top: 14px; width: 100%; aspect-ratio: 16/9;
+    background: #000; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px;
+    overflow: hidden; display: none;
+  }
+  .release-card-row .video-wrap.open { display: block; }
+  .release-card-row .video-wrap iframe,
+  .release-card-row .video-wrap video { width: 100%; height: 100%; display: block; border: 0; background: #000; }
+  @media (max-width: 720px) {
+    .release-card-row { grid-template-columns: 1fr; }
+    .release-card-row .art { max-width: 220px; }
+  }
+
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+  .photo-tile {
+    aspect-ratio: 4 / 3;
+    border: 1px solid rgba(255,255,255,0.14);
+    background-color: #0c0c0c;
+    background-size: cover; background-position: center;
+    display: grid; place-items: center;
+    color: rgba(255,255,255,0.45);
+    font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 16px;
+    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); border-radius: 4px;
+  }
+
+  /* Contact form */
+  .contact-form {
+    margin-top: 24px;
+    max-width: 720px;
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative;
+  }
+  .contact-form .field-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  @media (max-width: 560px) {
+    .contact-form .field-row { grid-template-columns: 1fr; }
+  }
+  .contact-field { display: flex; flex-direction: column; gap: 6px; }
+  .contact-field label {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 800; color: rgba(255,255,255,0.7);
+  }
+  .contact-field input,
+  .contact-field textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 4px;
+    color: #fff;
+    padding: 11px 13px;
+    font: inherit; font-size: 14px;
+    width: 100%;
+    resize: vertical;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .contact-field textarea { min-height: 120px; line-height: 1.5; }
+  .contact-field input:focus,
+  .contact-field textarea:focus {
+    outline: none;
+    border-color: var(--red);
+    background: rgba(255,255,255,0.06);
+  }
+  .contact-field input::placeholder,
+  .contact-field textarea::placeholder { color: rgba(255,255,255,0.32); }
+  .form-actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+  .btn-ghost-link {
+    color: var(--muted); font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 700;
+    text-decoration: none; border-bottom: 1px solid transparent;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+  .btn-ghost-link:hover { color: #fff; border-bottom-color: var(--red); }
+  .contact-status {
+    margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em;
+    min-height: 18px;
+  }
+  .contact-status.success { color: #6ee7a8; }
+  .contact-status.error { color: #ff8186; }
+  .contact-status.sending { color: rgba(255,255,255,0.7); }
+  .contact-setup-note {
+    margin: 8px 0 0; padding: 10px 12px;
+    background: rgba(255,108,112,0.08);
+    border: 1px solid rgba(255,108,112,0.3);
+    border-radius: 4px;
+    font-size: 12px; color: #ffb4b6;
+    line-height: 1.5;
+  }
+  button[type="submit"]:disabled {
+    opacity: 0.6; cursor: not-allowed;
+  }
+
+  footer {
+    margin-top: 48px; padding: 28px 0;
+    color: var(--muted); font-size: 12px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+  }
+  footer .footer-mark {
+    width: 54px; height: 54px;
+    background: url("images/logo-256.png") center/contain no-repeat;
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+  footer .footer-text { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+  footer .small { display: block; letter-spacing: 0.08em; font-size: 10px; color: rgba(255,255,255,0.32); }
+
+  /* === Responsive === */
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr; }
+    .nav { grid-template-columns: repeat(3, 1fr); }
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 680px) {
+    .shell { padding: 16px 14px 28px; }
+    .nav { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .nav a { font-size: 13px; padding: 14px 12px; min-height: 50px; text-align: center; }
+    .hero-sub::before, .hero-sub::after { width: 30px; }
+    .hero-sub { letter-spacing: 0.2em; font-size: 11px; }
+    .merch-card { grid-template-columns: 1fr; }
+    .release-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .stat-row { grid-template-columns: 1fr; }
+    .photo-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  /* ---------- Latest News card (full-width, below nav) ---------- */
+  #latestNews {
+    display: none; /* Hidden until JS confirms content */
+    margin: 18px 0 26px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:
+      linear-gradient(135deg, rgba(225,11,30,0.10) 0%, rgba(225,11,30,0.02) 60%, rgba(20,20,24,0.0) 100%),
+      var(--panel, #15151a);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    overflow: hidden;
+    position: relative;
+  }
+  #latestNews.visible { display: block; }
+  #latestNews::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--red);
+  }
+  .news-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 24px 28px 26px 32px;
+    align-items: center;
+  }
+  #latestNews.has-image .news-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  }
+  .news-body { min-width: 0; }
+  .news-eyebrow {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--red); font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .news-headline {
+    font-family: var(--display, 'Bebas Neue', sans-serif);
+    font-size: clamp(28px, 3.4vw, 40px);
+    line-height: 1.05;
+    margin: 0 0 10px;
+    letter-spacing: 0.02em;
+    color: #fff;
+  }
+  .news-text {
+    color: rgba(255,255,255,0.78);
+    font-size: 15px; line-height: 1.55;
+    margin: 0 0 16px;
+    white-space: pre-wrap;
+  }
+  .news-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--red); color: #fff;
+    padding: 10px 22px; border-radius: 999px;
+    font-weight: 800; text-decoration: none;
+    font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 22px rgba(225,11,30,0.35);
+  }
+  .news-cta:hover {
+    background: var(--red-bright, #ff2233);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(225,11,30,0.45);
+  }
+  .news-cta svg { width: 14px; height: 14px; }
+  .news-image {
+    width: 100%; aspect-ratio: 3 / 2;
+    border-radius: 12px;
+    background-size: cover; background-position: center;
+    background-color: rgba(255,255,255,0.04);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  }
+  @media (max-width: 760px) {
+    #latestNews.has-image .news-inner {
+      grid-template-columns: 1fr;
+    }
+    .news-image { aspect-ratio: 16 / 9; order: -1; }
+    .news-inner { padding: 20px 22px 22px 26px; }
+  }
+
+  /* ---------- Booking modal ---------- */
+  .booking-modal-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.78);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; align-items: flex-start; justify-content: center;
+    overflow-y: auto; padding: 40px 16px;
+    animation: bookingFadeIn .25s ease-out;
+  }
+  .booking-modal-overlay.open { display: flex; }
+  @keyframes bookingFadeIn { from { opacity: 0 } to { opacity: 1 } }
+  .booking-modal {
+    width: 100%; max-width: 640px;
+    background: linear-gradient(180deg, #1a0a0a 0%, #0a0606 100%);
+    border: 1px solid rgba(255,80,80,0.35);
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(255,40,40,0.25), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    padding: 28px 28px 24px;
+    position: relative;
+    color: #fff;
+    animation: bookingSlideIn .3s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes bookingSlideIn { from { transform: translateY(-20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+  .booking-modal h2 {
+    margin: 0 0 4px; font-family: 'Bebas Neue', system-ui, sans-serif;
+    font-size: 32px; letter-spacing: .03em; color: #fff;
+  }
+  .booking-modal .booking-sub {
+    margin: 0 0 22px; color: rgba(255,255,255,0.65);
+    text-transform: uppercase; font-size: 12px; letter-spacing: .12em; font-weight: 600;
+  }
+  .booking-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 36px; height: 36px; border-radius: 8px;
+    background: transparent; border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7); font-size: 20px; line-height: 1;
+    cursor: pointer; transition: all .15s;
+  }
+  .booking-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .booking-form .bf-row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .booking-form .bf-row.two { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) { .booking-form .bf-row.two { grid-template-columns: 1fr; } }
+  .booking-form label {
+    display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 6px;
+  }
+  .booking-form input, .booking-form select, .booking-form textarea {
+    width: 100%; box-sizing: border-box;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: #fff; font-size: 14px; font-family: inherit;
+    padding: 11px 13px; transition: border-color .15s, background .15s;
+  }
+  .booking-form input:focus, .booking-form select:focus, .booking-form textarea:focus {
+    outline: none; border-color: rgba(255,80,80,0.6); background: rgba(255,255,255,0.06);
+  }
+  .booking-form select { appearance: none; -webkit-appearance: none; background-image:
+      linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.55) 50%),
+      linear-gradient(135deg, rgba(255,255,255,0.55) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 32px;
+  }
+  .booking-form select option {
+    background-color: #1a0a0a;
+    color: #fff;
+  }
+  .booking-form textarea { resize: vertical; min-height: 90px; }
+  .booking-form .bf-honey { position: absolute; left: -9999px; }
+  .booking-actions { display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap; }
+  .booking-actions .btn-red {
+    background: linear-gradient(180deg, #d4252a 0%, #a01a1f 100%);
+    color: #fff; border: 0; padding: 12px 22px;
+    border-radius: 8px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; font-size: 13px; cursor: pointer;
+    transition: transform .1s, box-shadow .15s;
+    box-shadow: 0 4px 14px rgba(212,37,42,0.35);
+  }
+  .booking-actions .btn-red:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,37,42,0.5); }
+  .booking-actions .btn-red:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .booking-actions .btn-ghost {
+    background: transparent; color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.18); padding: 12px 18px;
+    border-radius: 8px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; font-size: 12px; cursor: pointer;
+  }
+  .booking-actions .btn-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .booking-status { margin: 14px 0 0; font-size: 13px; min-height: 18px; }
+  .booking-status.sending { color: rgba(255,255,255,0.6); }
+  .booking-status.success { color: #6ee07f; }
+  .booking-status.error   { color: #ff7a7a; }
+
+  /* ====== Text Club modal (EZ Texting embed) ====== */
+  /* Reuses booking-modal-overlay styles */
+  .textclub-modal {
+    width: 100%; max-width: 520px;
+    background: linear-gradient(180deg, #1a0a0a 0%, #0a0606 100%);
+    border: 1px solid rgba(255,80,80,0.35);
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(255,40,40,0.25), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    padding: 28px 28px 24px;
+    position: relative;
+    color: #fff;
+    animation: bookingSlideIn .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .textclub-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 36px; height: 36px; border-radius: 8px;
+    background: transparent; border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7); font-size: 20px; line-height: 1;
+    cursor: pointer; transition: all .15s; z-index: 2;
+  }
+  .textclub-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+  /* Override EZ Texting form styling to match the dark band aesthetic */
+  .textclub-modal .c-web-form {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    color: #fff !important;
+    font-family: inherit !important;
+  }
+  .textclub-modal .c-web-form__title {
+    font-family: 'Bebas Neue', system-ui, sans-serif !important;
+    font-size: 32px !important;
+    letter-spacing: .03em !important;
+    color: #fff !important;
+    margin: 0 0 4px !important;
+    text-align: left !important;
+    font-weight: 400 !important;
+  }
+  .textclub-modal .c-web-form__description {
+    color: rgba(255,255,255,0.65) !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+    letter-spacing: .12em !important;
+    font-weight: 600 !important;
+    margin: 0 0 22px !important;
+    text-align: left !important;
+  }
+  .textclub-modal .c-web-form__control-group {
+    margin-bottom: 14px !important;
+  }
+  .textclub-modal .c-web-form__label {
+    display: block !important;
+    font-size: 11px !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+    color: rgba(255,255,255,0.6) !important;
+    font-weight: 600 !important;
+    margin-bottom: 6px !important;
+  }
+  .textclub-modal .c-web-form__input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-family: inherit !important;
+    padding: 11px 13px !important;
+    transition: border-color .15s, background .15s !important;
+  }
+  .textclub-modal .c-web-form__input:focus {
+    outline: none !important;
+    border-color: rgba(255,80,80,0.6) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
+  /* Consent checkbox row — flex layout so the checkbox is its own column */
+  .textclub-modal .c-web-form__control-group:has(> .c-web-form__checkbox) {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+  }
+  .textclub-modal .c-web-form__checkbox {
+    flex: 0 0 auto !important;
+    position: static !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 2px 0 0 0 !important;
+    accent-color: #d4252a !important;
+    cursor: pointer !important;
+    z-index: 2 !important;
+  }
+  .textclub-modal .c-web-form__control-group label[for="c-web-form-agree"] {
+    flex: 1 1 auto !important;
+    position: static !important;
+    display: block !important;
+    padding-left: 0 !important;
+    text-transform: none !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+    color: rgba(255,255,255,0.55) !important;
+    letter-spacing: 0 !important;
+    font-weight: 400 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  /* Submit button */
+  .textclub-modal .c-web-form__submit {
+    background: linear-gradient(180deg, #d4252a 0%, #a01a1f 100%) !important;
+    color: #fff !important;
+    border: 0 !important;
+    padding: 12px 22px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    box-shadow: 0 4px 14px rgba(212,37,42,0.35) !important;
+    transition: transform .1s, box-shadow .15s !important;
+    margin-top: 6px !important;
+  }
+  .textclub-modal .c-web-form__submit:hover:not([disabled]) {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(212,37,42,0.5) !important;
+  }
+  .textclub-modal .c-web-form__submit[disabled] {
+    opacity: .5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+  /* Success message */
+  .textclub-modal .c-success-message {
+    display: none;
+    margin: 12px 0 0 !important;
+    color: #6ee07f !important;
+    font-size: 14px !important;
+    text-align: center !important;
+  }
+  .textclub-modal .c-success-message.show { display: block; }
+  /* Error list */
+  .textclub-modal .c-web-form__be-errors,
+  .textclub-modal .c-web-form__error {
+    color: #ff7a7a !important;
+    font-size: 12px !important;
+    margin: 4px 0 0 !important;
+    list-style: none !important;
+    padding: 0 !important;
+  }
+  /* Footer disclosure */
+  .textclub-modal .c-web-form__footer {
+    margin-top: 16px !important;
+    color: rgba(255,255,255,0.4) !important;
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+  }
+  .textclub-modal .c-web-form__link {
+    color: rgba(255,255,255,0.6) !important;
+    text-decoration: none !important;
+  }
+</style>
+</head>
+<body>
+<!-- SVG luminance keyer: maps near-black pixels to transparent.
+     Used by .hero-logo-video to drop the AI-video's black background. -->
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="blackToAlpha" color-interpolation-filters="sRGB">
+      <!-- Compute luminance into the alpha channel; the higher the brightness, the more opaque.
+           Then a transfer function boosts contrast so mid-tones don't get washed out. -->
+      <feColorMatrix type="matrix" values=
+        "1 0 0 0 0
+         0 1 0 0 0
+         0 0 1 0 0
+         0.299 0.587 0.114 0 0"/>
+      <feComponentTransfer>
+        <!-- Steep ramp so anything brighter than ~12% luminance becomes fully opaque,
+             and pure black stays fully transparent. -->
+        <feFuncA type="linear" slope="8" intercept="-0.5"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+</svg>
+<div class="backdrop" aria-hidden="true">
+  <div class="spotlights" aria-hidden="true">
+    <span class="beam beam-1"></span>
+    <span class="beam beam-2"></span>
+    <span class="beam beam-3"></span>
+    <span class="beam beam-4"></span>
+  </div>
+</div>
+
+<div class="shell">
+
+  <header class="brandbar">
+    <a href="#" class="brand-mark" aria-label="Slightly Gigantic"></a>
+    <div class="brand-text">
+      <span class="brand-name">Slightly Gigantic</span>
+      <span class="brand-tag"><span data-bind="bio.style">Piano-Driven Stadium Pop</span> · <span data-bind="bio.basedIn">Wisconsin</span></span>
+    </div>
+    <div class="brand-spacer"></div>
+    <div class="brand-cta-group">
+      <button type="button" id="textClubBtn" class="brand-cta cta-primary" style="display:none">Join Text Club</button>
+      <a href="#book" id="openBookingBtn" class="brand-cta">Booking</a>
+    </div>
+  </header>
+
+  <header class="hero">
+    <h1 class="hero-title hero-logo">
+      <video id="heroLogoVideo" class="hero-logo-video"
+             autoplay muted loop playsinline
+             preload="auto"
+             crossorigin="anonymous"
+             aria-hidden="true">
+        <source src="images/logo-spinning.webm?v=20260605k" type="video/webm">
+        <source src="images/logo-spinning.mp4?v=20260605k"  type="video/mp4">
+      </video>
+      <canvas id="heroLogoCanvas" class="hero-logo-canvas"
+              width="960" height="540"
+              aria-label="Slightly Gigantic"></canvas>
+      <img src="images/logo-illustrated.png?v=20260605k" alt="Slightly Gigantic"
+           class="hero-logo-img" id="heroLogoImg"
+           style="display:none">
+    </h1>
+    <div class="hero-sub">Official Band Website</div>
+  </header>
+  <script>
+    /* Real-time chromakey: render the source <video> onto a canvas, replacing
+       near-black pixels with transparent. Works on every browser including iOS
+       Safari — no alpha video format needed. */
+    (function() {
+      var v = document.getElementById('heroLogoVideo');
+      var c = document.getElementById('heroLogoCanvas');
+      var img = document.getElementById('heroLogoImg');
+      if (!v || !c) return;
+      var ctx = c.getContext('2d', { willReadFrequently: true });
+      var running = false;
+      var lastW = 0, lastH = 0;
+      var THRESH = 28; // anything with R+G+B/3 below this becomes transparent
+      var FEATHER = 18; // soft ramp width above THRESH for anti-aliased edges
+
+      function fallbackToImage() {
+        if (img) {
+          img.style.display = 'block';
+          img.classList.add('hero-logo-img');
+        }
+        if (c) c.style.display = 'none';
+      }
+
+      function drawFrame() {
+        if (v.readyState < 2 || v.paused || v.ended) {
+          requestAnimationFrame(drawFrame);
+          return;
+        }
+        var vw = v.videoWidth, vh = v.videoHeight;
+        if (vw === 0 || vh === 0) {
+          requestAnimationFrame(drawFrame);
+          return;
+        }
+        if (vw !== lastW || vh !== lastH) {
+          c.width = vw; c.height = vh;
+          lastW = vw; lastH = vh;
+        }
+        try {
+          ctx.drawImage(v, 0, 0, vw, vh);
+          var frame = ctx.getImageData(0, 0, vw, vh);
+          var d = frame.data;
+          var n = d.length;
+          for (var i = 0; i < n; i += 4) {
+            var r = d[i], g = d[i+1], b = d[i+2];
+            // Use max channel — catches dark-but-saturated areas as opaque
+            var maxc = r > g ? (r > b ? r : b) : (g > b ? g : b);
+            if (maxc <= THRESH) {
+              d[i+3] = 0;
+            } else if (maxc < THRESH + FEATHER) {
+              // Soft edge: ramp alpha from 0 to 255 across the feather window
+              d[i+3] = Math.round(((maxc - THRESH) / FEATHER) * 255);
+            }
+            // else leave alpha at 255 (fully opaque)
+          }
+          ctx.putImageData(frame, 0, 0);
+        } catch (err) {
+          // CORS-tainted canvas or other failure — fall back to static image
+          console.warn('Chromakey failed:', err);
+          fallbackToImage();
+          running = false;
+          return;
+        }
+        if (running) requestAnimationFrame(drawFrame);
+      }
+
+      function start() {
+        if (running) return;
+        running = true;
+        // Try to play (autoplay sometimes blocked until user gesture; tap will resume)
+        var p = v.play();
+        if (p && p.catch) p.catch(function() { /* ignore */ });
+        requestAnimationFrame(drawFrame);
+      }
+
+      v.addEventListener('loadeddata', start);
+      v.addEventListener('error', fallbackToImage);
+      // If video already loaded by the time this script runs
+      if (v.readyState >= 2) start();
+      // Also kick off after a short delay as a safety net
+      setTimeout(function() { if (!running) start(); }, 800);
+      // If after 4s we still haven't rendered anything, show the static image
+      setTimeout(function() {
+        if (lastW === 0) fallbackToImage();
+      }, 4000);
+    })();
+  </script>
+
+  <nav class="nav" aria-label="Primary">
+    <a href="#bio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      Bio
+    </a>
+    <a href="#music">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Music
+    </a>
+    <a href="#photos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Photos
+    </a>
+    <a id="nav-merch" href="#merch" target="_blank" rel="noopener" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l4-3h8l4 3-3 3v10H7V10z"/><path d="M9 4a3 3 0 0 0 6 0"/></svg>
+      Merch
+    </a>
+    <a href="#tour">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Tour
+    </a>
+  </nav>
+
+  <!-- Latest News card — hidden until populated from Supabase -->
+  <aside id="latestNews" aria-label="Latest news">
+    <div class="news-inner">
+      <div class="news-body">
+        <div class="news-eyebrow">Latest News</div>
+        <h2 class="news-headline" id="newsHeadline"></h2>
+        <p class="news-text" id="newsText"></p>
+        <a class="news-cta" id="newsCta" href="#" target="_blank" rel="noopener" style="display:none">
+          <span id="newsCtaLabel">Go</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <div class="news-image" id="newsImage" style="display:none" role="img" aria-label="Latest news image"></div>
+    </div>
+  </aside>
+
+  <main class="grid">
+    <section class="feature empty" id="heroFeature" aria-label="Band photo">
+      <div class="feature-logo" aria-hidden="true"></div>
+      <div class="feature-label" id="heroFeatureLabel">Band Photo<br>Here</div>
+      <div class="feature-edge-fade" aria-hidden="true"></div>
+    </section>
+
+    <aside class="sidebar">
+
+      <article class="card merch-card" id="merch-spotlight" style="display:none">
+        <div class="merch-text">
+          <div class="eyebrow" style="margin-bottom:6px">New Merch</div>
+          <h3>Rep the<br>Sound.</h3>
+          <p style="margin-top:-4px">Support the band.</p>
+          <a id="merch-cta" href="#merch" class="btn-red" target="_blank" rel="noopener">
+            <span id="merch-cta-label">Shop Merch</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+        <div class="merch-image" role="img" aria-label="Slightly Gigantic t-shirt and snapback cap"></div>
+      </article>
+
+      <article class="card release-card" id="release-spotlight">
+        <div class="eyebrow">Latest Release</div>
+        <div class="release-grid">
+          <div class="album-art-wrap">
+            <img id="releaseArtwork" class="album-art" alt="" loading="eager" decoding="async" fetchpriority="high" style="display:none">
+            <div class="album-disc" id="releaseDisc" aria-hidden="true" data-album-label="FADE TO RED"></div>
+          </div>
+          <div class="release-info">
+            <h3 data-bind="release.title">Fade to Red</h3>
+            <div class="meta" data-bind="release.meta">Single · 2024</div>
+            <div class="stream-list">
+              <a class="stream-link" data-bind-href="release.spotify" data-stream="spotify" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon spotify">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm4.6 14.4a.7.7 0 0 1-1 .2c-2.6-1.6-5.9-2-9.8-1a.7.7 0 1 1-.3-1.4c4.3-1 8-.6 10.9 1.2.3.2.4.6.2 1zm1.3-3a.9.9 0 0 1-1.2.3c-3-1.8-7.6-2.3-11.2-1.3a.9.9 0 1 1-.5-1.7c4.1-1.2 9.1-.6 12.6 1.5.4.3.5.8.3 1.2zm.1-3.1c-3.6-2.1-9.5-2.3-12.9-1.3a1 1 0 1 1-.6-2C8.4 6 14.9 6.2 19 8.6a1 1 0 1 1-1 1.7z"/></svg>
+                </span>
+                <span class="label">Spotify</span>
+                <span class="chev">›</span>
+              </a>
+              <a class="stream-link" data-bind-href="release.apple" data-stream="apple" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon apple">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2.6 2.1-3.9 2.2-4-.6-1-1.6-1.1-2.4-1.1-1-.1-2 .6-2.5.6s-1.3-.6-2.2-.6c-1.1 0-2.2.7-2.8 1.7-1.2 2.1-.3 5.2.9 6.9.6.8 1.2 1.7 2.1 1.7s1.2-.5 2.3-.5 1.4.5 2.3.5 1.6-.8 2.1-1.7c.7-1 1-1.9 1-2-.1-.1-2-.8-2-2.5zM14.8 6.5c.5-.6.8-1.4.7-2.2-.7 0-1.5.5-2 1.1-.4.5-.8 1.3-.7 2.1.8.1 1.5-.4 2-1z"/></svg>
+                </span>
+                <span class="label">Apple Music</span>
+                <span class="chev">›</span>
+              </a>
+              <a class="stream-link" data-bind-href="release.youtube" data-stream="youtube" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon youtube">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.2-3L10 9v6z"/></svg>
+                </span>
+                <span class="label">YouTube</span>
+                <span class="chev">›</span>
+              </a>
+              <a class="stream-link" data-bind-href="release.amazon" data-stream="amazon" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon amazon">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 4.5h2v6h-2v-6zm5.5 8.7c-2.6 1.9-6.4 2-9 .2-.2-.1-.4.1-.2.3 2.4 2.2 6.4 2.4 9.3.4.2-.1 0-.4-.1-.3v-.6zm.8 1.1c-.3-.4-2-.2-2.7-.1-.2 0-.2-.1-.1-.2.9-.6 2.4-.4 2.8-.2.3.2-.1 1.6-.7 2.3-.2.2-.3.1-.2-.1.4-.6.9-1.4.9-1.7z"/></svg>
+                </span>
+                <span class="label">Amazon Music</span>
+                <span class="chev">›</span>
+              </a>
+              <a class="stream-link" data-bind-href="release.soundcloud" data-stream="soundcloud" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon soundcloud">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 14v3a.5.5 0 0 0 1 0v-3a.5.5 0 0 0-1 0zm2-2v5a.5.5 0 0 0 1 0v-5a.5.5 0 0 0-1 0zm2-1v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-1 0zm2-2v8a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0zm2-1v9a.5.5 0 0 0 1 0V8a.5.5 0 0 0-1 0zm3 9.5h6a3 3 0 0 0 0-6 3 3 0 0 0-.4 0 4 4 0 0 0-7.6-1.2v6.7a.5.5 0 0 0 .5.5h1.5z"/></svg>
+                </span>
+                <span class="label">SoundCloud</span>
+                <span class="chev">›</span>
+              </a>
+              <a class="stream-link" data-bind-href="release.pandora" data-stream="pandora" target="_blank" rel="noopener" style="display:none">
+                <span class="platform-icon pandora">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h11a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-5v7H5V2z"/></svg>
+                </span>
+                <span class="label">Pandora</span>
+                <span class="chev">›</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </aside>
+  </main>
+
+  <!-- ===== Now Streaming row ===== -->
+  <section class="social-wrap">
+    <div class="social-rule"><span>Now Streaming</span></div>
+    <div class="socials streaming-row" id="streamingRow">
+      <a id="sm-spotify" data-bind-href="streaming.spotify|release.spotify" data-stream="spotify" target="_blank" rel="noopener" aria-label="Spotify" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.6 14.4a.7.7 0 0 1-1 .2c-2.6-1.6-5.9-2-9.8-1.1a.7.7 0 1 1-.3-1.3c4.2-1 7.9-.6 10.8 1.2a.7.7 0 0 1 .3 1zm1.2-2.7a.9.9 0 0 1-1.2.3c-3-1.8-7.5-2.4-11-1.3a.9.9 0 0 1-.5-1.7c4-1.2 9-.6 12.4 1.5a.9.9 0 0 1 .3 1.2zm.1-2.8c-3.5-2.1-9.4-2.3-12.7-1.3a1 1 0 1 1-.6-2c3.9-1.2 10.4-1 14.4 1.4a1 1 0 0 1-1 1.9z"/></svg>
+      </a>
+      <a id="sm-apple" data-bind-href="streaming.apple|release.apple" data-stream="apple" target="_blank" rel="noopener" aria-label="Apple Music" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 13c-.1-2 1.6-3 1.7-3.1-.9-1.3-2.3-1.5-2.8-1.5-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 6 1 8 .7 1 1.4 2.1 2.5 2.1s1.4-.7 2.7-.7 1.6.7 2.7.7c1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3-.1 0-2.1-.8-2.1-3.2zM15.4 6.7c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.5.6-1 1.6-.9 2.6 1 .1 2-.5 2.6-1.2z"/></svg>
+      </a>
+      <a id="sm-amazon" data-bind-href="streaming.amazon|release.amazon" data-stream="amazon" target="_blank" rel="noopener" aria-label="Amazon Music" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm3.8 14.2c-.1.1-.3.1-.4 0-.7-.6-.8-.9-1.2-1.5-1.1 1.1-1.9 1.5-3.3 1.5-1.7 0-3-1-3-3.1 0-1.6 1-2.7 2.3-3.3 1.2-.5 2.8-.6 4-.7v-.3c0-.5 0-1.1-.3-1.5-.3-.4-.7-.5-1.2-.5-.8 0-1.6.4-1.7 1.3 0 .2-.2.4-.4.4l-2-.2c-.2 0-.4-.2-.3-.5.4-2.4 2.6-3.1 4.5-3.1 1 0 2.3.3 3.1 1 1 1 .9 2.2.9 3.6V12c0 1 .4 1.4.8 1.9.1.2.2.4 0 .5-.4.4-1.2 1.1-1.6 1.5zm-2.2-4.8c0 .8 0 1.4-.4 2.1-.3.5-.8.8-1.4.8s-1.2-.5-1.2-1.4c0-1.6 1.4-1.9 2.7-1.9v.4zM6.7 18.4c4.6 2.2 9.5 2 13.4-.5.3-.2 0-.5-.2-.4-4.3 1.5-9 1.6-13.1.1-.3-.1-.5.3-.1.5zm15-1.5c-.2-.3-1.5-.4-2.3-.2-.3.1-.3.4 0 .3.8-.1 1.6-.1 1.8.1.3.3-.3 1.5-.5 2 0 .2.1.2.3.1.7-.6 1-1.9.7-2.3z"/></svg>
+      </a>
+      <a id="sm-soundcloud" data-bind-href="streaming.soundcloud|release.soundcloud" data-stream="soundcloud" target="_blank" rel="noopener" aria-label="SoundCloud" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15v-3a.5.5 0 0 1 1 0v3a.5.5 0 0 1-1 0zm2 1V11a.5.5 0 0 1 1 0v5a.5.5 0 0 1-1 0zm2 .5V10a.5.5 0 0 1 1 0v6.5a.5.5 0 0 1-1 0zm2 0V8.5a.5.5 0 0 1 1 0v8a.5.5 0 0 1-1 0zM12 17V7a5 5 0 0 1 9.8 1.5 3.5 3.5 0 0 1-.8 6.9h-8a1 1 0 0 1-1-1z"/></svg>
+      </a>
+      <a id="sm-youtube" data-bind-href="streaming.youtube|release.youtube" data-stream="youtube" target="_blank" rel="noopener" aria-label="YouTube" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7.5a3 3 0 0 0-2-2C18 5 12 5 12 5s-6 0-8 .5a3 3 0 0 0-2 2A30 30 0 0 0 1.5 12 30 30 0 0 0 2 16.5a3 3 0 0 0 2 2C6 19 12 19 12 19s6 0 8-.5a3 3 0 0 0 2-2c.4-1.5.5-3 .5-4.5s-.1-3-.5-4.5zM10 15V9l5.2 3z"/></svg>
+      </a>
+      <a id="sm-pandora" data-bind-href="streaming.pandora|release.pandora" data-stream="pandora" target="_blank" rel="noopener" aria-label="Pandora" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h10c2.5 0 4 1.8 4 4.5C19 10.5 16 13 12.5 13H9v9H5z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Social row -->
+  <section class="social-wrap">
+    <div class="social-rule"><span>Follow Slightly Gigantic</span></div>
+    <div class="socials" id="followRow">
+      <a id="sm-instagram" data-bind-href="social.instagram" target="_blank" rel="noopener" aria-label="Instagram" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a id="sm-facebook" data-bind-href="social.facebook" target="_blank" rel="noopener" aria-label="Facebook" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l1-4h-4V7.5c0-1.1.5-2 2-2h2V2h-3c-2.8 0-5 1.7-5 5v3H6v4h3v8h4z"/></svg>
+      </a>
+      <a id="sm-tiktok" data-bind-href="social.tiktok" target="_blank" rel="noopener" aria-label="TikTok" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 8.5a6.5 6.5 0 0 1-3.8-1.2v7.5a5.8 5.8 0 1 1-5.8-5.8v3a2.8 2.8 0 1 0 2.8 2.8V2h3a3.5 3.5 0 0 0 3.8 3.5z"/></svg>
+      </a>
+      <a id="sm-youtube-channel" data-bind-href="social.youtube" target="_blank" rel="noopener" aria-label="YouTube" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7.5a3 3 0 0 0-2-2C18 5 12 5 12 5s-6 0-8 .5a3 3 0 0 0-2 2A30 30 0 0 0 1.5 12 30 30 0 0 0 2 16.5a3 3 0 0 0 2 2C6 19 12 19 12 19s6 0 8-.5a3 3 0 0 0 2-2c.4-1.5.5-3 .5-4.5s-.1-3-.5-4.5zM10 15V9l5.2 3z"/></svg>
+      </a>
+      <a id="sm-email" href="#contact" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== Inner sections (anchors from nav) ===== -->
+
+  <section class="section" id="bio">
+
+    <h2>Bio</h2>
+    <div id="bioBody">
+      <p>Slightly Gigantic blends arena-ready hooks with piano-driven stadium pop, built to fill big rooms with big choruses.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="eyebrow">Based In</div><strong data-bind="bio.basedIn">Milwaukee, WI</strong></div>
+      <div class="stat"><div class="eyebrow">Style</div><strong data-bind="bio.style">Piano-Driven Stadium Pop</strong></div>
+      <div class="stat"><div class="eyebrow">Booking</div><strong data-bind="bio.booking">Open</strong></div>
+    </div>
+  </section>
+
+  <section class="section" id="music">
+
+    <h2>Music</h2>
+    <p>Tracks, videos, and downloads.</p>
+    <div class="release-grid-section" id="musicGrid">
+      <div class="track" style="justify-content:center;color:var(--muted)">No releases yet. Add some from the admin page.</div>
+    </div>
+  </section>
+
+  <section class="section" id="tour">
+
+    <h2>Tour Dates</h2>
+    <p>Upcoming shows.</p>
+    <div class="track-list" id="tourList">
+      <div class="track" style="justify-content:center;color:var(--muted)">No upcoming dates yet. Check back soon.</div>
+    </div>
+  </section>
+
+  <section class="section" id="photos">
+
+    <h2>Photos</h2>
+    <p>Live and promo shots from the road.</p>
+    <div class="photo-grid" id="photoGrid">
+      <div class="photo-tile">Photo 1</div>
+      <div class="photo-tile">Photo 2</div>
+      <div class="photo-tile">Photo 3</div>
+    </div>
+  </section>
+
+  <section class="section" id="merch">
+
+    <h2>Merch</h2>
+    <div class="contact-row">
+      <div><strong>Official Merch Store</strong></div>
+      <a href="https://bandcamp.com/" target="_blank" rel="noopener" class="btn-red">Open Store</a>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+
+    <h2>Contact</h2>
+    <p style="color:var(--muted); text-transform:uppercase; font-size:13px; letter-spacing:.06em; font-weight:600; line-height:1.5; max-width:560px;">
+      Send a message about booking, press, or anything else. We read every one.
+    </p>
+
+    <form id="contactForm" class="contact-form" novalidate>
+      <div class="field-row">
+        <div class="contact-field">
+          <label for="cf-name">Your Name</label>
+          <input id="cf-name" name="name" type="text" required autocomplete="name" placeholder="Jane Doe">
+        </div>
+        <div class="contact-field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="contact-field">
+        <label for="cf-subject">Subject</label>
+        <input id="cf-subject" name="subject" type="text" placeholder="Booking inquiry / Press / Other">
+      </div>
+      <div class="contact-field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="6" required placeholder="Tell us what you're thinking…"></textarea>
+      </div>
+      <!-- honeypot anti-spam -->
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0">
+      <div class="form-actions">
+        <button type="submit" id="cfSubmit" class="btn-red">Send Message</button>
+        <a id="cfMailto" href="mailto:booking@slightlygigantic.com" class="btn-ghost-link">Or email us directly</a>
+      </div>
+      <p id="cfStatus" class="contact-status" role="status" aria-live="polite"></p>
+      <p id="cfSetupNote" class="contact-setup-note" style="display:none">
+        Heads up to the admin: the contact form needs a Formspree endpoint configured in the admin panel. Until then, the button falls back to opening your email app.
+      </p>
+    </form>
+  </section>
+
+
+  <footer>
+    <div class="footer-mark" id="footerMark" aria-hidden="true" title="Slightly Gigantic"></div>
+    <div class="footer-text">
+      <span>© 2026 Slightly Gigantic</span>
+      <span class="small">All rights reserved &middot; <a href="/terms" style="color:inherit">Terms</a> &middot; <a href="/privacy" style="color:inherit">Privacy</a></span>
+    </div>
+  </footer>
+  <script>
+    /* Hidden admin entrance: triple-click the small footer logo within 1.5s */
+    (function () {
+      var mark = document.getElementById('footerMark');
+      if (!mark) return;
+      mark.style.cursor = 'default';
+      mark.style.transition = 'transform 0.18s ease, filter 0.18s ease';
+      var clicks = 0, timer = null;
+      function reset() { clicks = 0; if (timer) { clearTimeout(timer); timer = null; } }
+      mark.addEventListener('click', function (e) {
+        e.preventDefault();
+        clicks++;
+        // Subtle feedback only the person clicking will notice
+        mark.style.transform = 'scale(1.08)';
+        mark.style.filter = 'brightness(1.3)';
+        setTimeout(function () {
+          mark.style.transform = '';
+          mark.style.filter = '';
+        }, 160);
+        if (clicks >= 3) {
+          reset();
+          window.location.href = 'admin.html';
+          return;
+        }
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(reset, 1500);
+      });
+    })();
+  </script>
+
+</div>
+
+<script src="config.js?v=20260715a"></script>
+<script src="sg-data.js?v=20260715a"></script>
+<script>
+/* === Pull live content from Supabase (with localStorage fallback) === */
+(async function applyAdminContent() {
+  let data = null;
+  try {
+    data = await window.SGData.fetchContent();
+  } catch (e) {
+    console.warn("[SG] content fetch failed:", e);
+  }
+  if (!data) return;
+  // Expose to other scripts (e.g. booking modal)
+  window.__SG_CONTENT__ = data;
+  window.dispatchEvent(new CustomEvent('sg:content-ready', { detail: data }));
+
+  // ---- Bio body (paragraphs) ----
+  if (data.bio && data.bio.body) {
+    const bioBody = document.getElementById("bioBody");
+    if (bioBody) {
+      const paras = String(data.bio.body).split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+      if (paras.length) {
+        bioBody.innerHTML = paras.map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
+      }
+    }
+  }
+
+  // ---- Hero band photo (top feature panel) ----
+  const heroSrc = (data.hero && (data.hero.url || data.hero.photo)) || "";
+  const heroStoredAR = (data.hero && Number(data.hero.aspectRatio)) || 0;
+  const feat = document.getElementById("heroFeature");
+  const lbl  = document.getElementById("heroFeatureLabel");
+  function applyHeroAspect(ar) {
+    if (!feat) return;
+    // ar < 1   => portrait (taller than wide) => letterbox so face isn't cut
+    // ar 1..1.4 => squarish => letterbox (also tends to crop faces with cover)
+    // ar > 1.4 => clearly landscape => cover edge-to-edge
+    if (ar > 0 && ar < 1.4) {
+      feat.classList.add("portrait-photo");
+    } else {
+      feat.classList.remove("portrait-photo");
+    }
+  }
+  if (heroSrc) {
+    if (feat) {
+      feat.style.backgroundImage = `url('${heroSrc}')`;
+      feat.classList.remove("empty");
+      feat.classList.add("has-photo");
+      if (heroStoredAR > 0) {
+        applyHeroAspect(heroStoredAR);
+      } else {
+        // Legacy photo with no stored dimensions — measure it on the fly.
+        // Start with safer 'cover from top' so faces aren't immediately cropped
+        // while we wait for the image to load.
+        feat.classList.add("portrait-photo");
+        const probe = new Image();
+        probe.onload = () => {
+          const ar = probe.naturalWidth && probe.naturalHeight
+            ? probe.naturalWidth / probe.naturalHeight
+            : 0;
+          applyHeroAspect(ar);
+        };
+        probe.onerror = () => { /* leave portrait-photo on as the safer default */ };
+        probe.src = heroSrc;
+      }
+    }
+    if (lbl) lbl.style.display = "none";
+  }
+  // (if no heroSrc: .feature.empty stays — the big centered logo shows via CSS)
+
+  // ---- Merch link ----
+  const merchUrl = (data.merch && data.merch.url) ? String(data.merch.url).trim() : "";
+  const merchLabel = (data.merch && data.merch.label) ? String(data.merch.label).trim() : "Shop Merch";
+  const merchCta = document.getElementById("merch-cta");
+  const merchCard = document.getElementById("merch-spotlight");
+  const merchNav = document.getElementById("nav-merch");
+  const merchLabelEl = document.getElementById("merch-cta-label");
+  if (merchUrl && /^https?:/i.test(merchUrl)) {
+    if (merchCta)     merchCta.setAttribute("href", merchUrl);
+    if (merchNav)     merchNav.setAttribute("href", merchUrl);
+    if (merchLabelEl) merchLabelEl.textContent = merchLabel || "Shop Merch";
+    if (merchCard)    merchCard.style.display = "";
+    if (merchNav)     merchNav.style.display = "";
+  }
+
+  // ---- Latest News card ----
+  (function applyLatestNews() {
+    var card     = document.getElementById("latestNews");
+    var hEl      = document.getElementById("newsHeadline");
+    var tEl      = document.getElementById("newsText");
+    var ctaEl    = document.getElementById("newsCta");
+    var ctaLabel = document.getElementById("newsCtaLabel");
+    var imgEl    = document.getElementById("newsImage");
+    if (!card) return;
+    var news = (data && data.news) || {};
+    var headline  = (news.headline || "").toString().trim();
+    var body      = (news.body || "").toString().trim();
+    var imageUrl  = (news.image && news.image.url) ? String(news.image.url).trim() : "";
+    var linkUrl   = (news.linkUrl || "").toString().trim();
+    var linkLabel = (news.linkLabel || "Go").toString().trim() || "Go";
+
+    // If nothing meaningful is set, keep card hidden
+    if (!headline && !body && !imageUrl) {
+      card.classList.remove("visible", "has-image");
+      return;
+    }
+    if (hEl) { hEl.textContent = headline; hEl.style.display = headline ? "" : "none"; }
+    if (tEl) { tEl.textContent = body;     tEl.style.display = body ? "" : "none"; }
+    if (imgEl) {
+      if (imageUrl) {
+        imgEl.style.backgroundImage = "url('" + imageUrl.replace(/'/g, "\\'") + "')";
+        imgEl.style.display = "";
+        card.classList.add("has-image");
+      } else {
+        imgEl.style.backgroundImage = "";
+        imgEl.style.display = "none";
+        card.classList.remove("has-image");
+      }
+    }
+    if (ctaEl && ctaLabel) {
+      if (linkUrl && /^https?:/i.test(linkUrl)) {
+        ctaEl.setAttribute("href", linkUrl);
+        ctaLabel.textContent = linkLabel;
+        ctaEl.style.display = "";
+      } else {
+        ctaEl.removeAttribute("href");
+        ctaEl.style.display = "none";
+      }
+    }
+    card.classList.add("visible");
+  })();
+
+  // ---- Text Club button (header) ----
+  (function applyTextClub() {
+    var btn = document.getElementById("textClubBtn");
+    if (!btn) return;
+    var tc = (data && data.textClub) || {};
+    var label = (tc.label || "Join Text Club").toString().trim() || "Join Text Club";
+    // Show if enabled OR (legacy) if a url is set. Default OFF when neither is set.
+    var enabled = tc.enabled === true || (tc.url && /^https?:/i.test(tc.url));
+    if (enabled) {
+      btn.textContent = label;
+      btn.style.display = "";
+      // If an external URL is set, open it in a new tab; otherwise open the on-site EZ Texting modal.
+      var url = (tc.url || "").toString().trim();
+      btn.onclick = function(e) {
+        e.preventDefault();
+        if (url && /^https?:/i.test(url)) { window.open(url, "_blank", "noopener"); return; }
+        var ov = document.getElementById("textclubOverlay");
+        if (ov) {
+          ov.classList.add("open");
+          ov.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+      };
+    } else {
+      btn.style.display = "none";
+    }
+  })();
+
+  // ---- Release fields (text + links) ----
+  document.querySelectorAll("[data-bind]").forEach(el => {
+    const path = el.dataset.bind.split(".");
+    let val = data;
+    for (const k of path) val = val && val[k];
+    if (val) el.textContent = val;
+  });
+  // Resolve a single dotted path like "streaming.spotify" against data.
+  function resolvePath(root, dottedPath) {
+    const parts = dottedPath.split(".");
+    let v = root;
+    for (const k of parts) v = v && v[k];
+    return v;
+  }
+  document.querySelectorAll("[data-bind-href]").forEach(el => {
+    // Support multiple paths separated by "|" — first non-empty wins (fallback chain)
+    const paths = el.dataset.bindHref.split("|").map(s => s.trim()).filter(Boolean);
+    let val = "";
+    let firstPath = paths[0] ? paths[0].split(".") : [];
+    for (const p of paths) {
+      const v = resolvePath(data, p);
+      if (v) { val = v; break; }
+    }
+    if (val) el.setAttribute("href", val);
+    // Streaming icons: only show when a real URL is set
+    if (el.hasAttribute("data-stream")) {
+      el.style.display = (val && /^https?:/i.test(val)) ? "" : "none";
+    }
+    // Social icons (social.*): only show when a real URL is set
+    if (firstPath[0] === "social") {
+      el.style.display = (val && /^https?:/i.test(val)) ? "" : "none";
+    }
+  });
+
+  // ---- Contact form + email mailto fallback ----
+  const contact      = data.contact || {};
+  const contactEmail = (contact.email || "").trim();
+  const formspreeUrl = (contact.formspreeUrl || "").trim();
+  const cfMailto     = document.getElementById("cfMailto");
+  const smEmail      = document.getElementById("sm-email");
+  const fallbackHref = contactEmail ? `mailto:${contactEmail}` : "";
+  if (cfMailto && fallbackHref) cfMailto.setAttribute("href", fallbackHref);
+  // The little envelope in the Follow row — jump to #contact, but if no form is set up
+  // and an email is configured, mailto: works just as well.
+  if (smEmail && fallbackHref && !formspreeUrl) smEmail.setAttribute("href", fallbackHref);
+
+  const contactForm = document.getElementById("contactForm");
+  const cfStatus    = document.getElementById("cfStatus");
+  const cfSubmit    = document.getElementById("cfSubmit");
+  const cfSetupNote = document.getElementById("cfSetupNote");
+  if (contactForm) {
+    // Show the setup hint only on admin's first visit (when the form has no destination)
+    // Hidden by default; only flips on if neither formspree nor contact email is set.
+    if (!formspreeUrl && !contactEmail && cfSetupNote) cfSetupNote.style.display = "";
+
+    contactForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (cfStatus) { cfStatus.className = "contact-status sending"; cfStatus.textContent = "Sending…"; }
+      cfSubmit && (cfSubmit.disabled = true);
+
+      // Honeypot — bots fill hidden fields
+      const trap = contactForm.querySelector('input[name="_gotcha"]');
+      if (trap && trap.value) {
+        // Silently "succeed" so bots don't retry
+        if (cfStatus) { cfStatus.className = "contact-status success"; cfStatus.textContent = "Thanks — we'll be in touch."; }
+        contactForm.reset();
+        cfSubmit && (cfSubmit.disabled = false);
+        return;
+      }
+
+      const fd = new FormData(contactForm);
+      // If Formspree is set, post to it; otherwise fall back to mailto:
+      if (formspreeUrl && /^https?:\/\//i.test(formspreeUrl)) {
+        try {
+          const res = await fetch(formspreeUrl, {
+            method: "POST",
+            headers: { Accept: "application/json" },
+            body: fd
+          });
+          if (res.ok) {
+            if (cfStatus) { cfStatus.className = "contact-status success"; cfStatus.textContent = "Message sent. We'll get back to you soon."; }
+            contactForm.reset();
+          } else {
+            let msg = "";
+            try { const j = await res.json(); msg = (j.errors && j.errors.map(x => x.message).join(", ")) || ""; } catch (_) {}
+            if (cfStatus) { cfStatus.className = "contact-status error"; cfStatus.textContent = "Couldn't send (" + (msg || res.status) + "). Try the email link below."; }
+          }
+        } catch (err) {
+          console.error("[contact] submit failed:", err);
+          if (cfStatus) { cfStatus.className = "contact-status error"; cfStatus.textContent = "Network error — try the email link below."; }
+        }
+      } else if (contactEmail) {
+        // No Formspree configured — open the user's mail client pre-filled
+        const name    = (fd.get("name")    || "").toString();
+        const email   = (fd.get("email")   || "").toString();
+        const subject = (fd.get("subject") || "Message from slightlygigantic.com").toString();
+        const message = (fd.get("message") || "").toString();
+        const body = `From: ${name} <${email}>\n\n${message}`;
+        const href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = href;
+        if (cfStatus) { cfStatus.className = "contact-status success"; cfStatus.textContent = "Opening your email app…"; }
+      } else {
+        if (cfStatus) { cfStatus.className = "contact-status error"; cfStatus.textContent = "Contact isn't configured yet — admin needs to set this up."; }
+      }
+      cfSubmit && (cfSubmit.disabled = false);
+    });
+  }
+  // If no streaming icons are visible, hide the whole row
+  const streamRow = document.getElementById("streamingRow");
+  if (streamRow) {
+    const anyVisible = Array.from(streamRow.querySelectorAll("[data-stream]")).some(a => a.style.display !== "none");
+    streamRow.parentElement.style.display = anyVisible ? "" : "none";
+  }
+  // album disc label + artwork image
+  const disc    = document.getElementById("releaseDisc");
+  const artImg  = document.getElementById("releaseArtwork");
+  const artUrl  = (data.release && data.release.artwork && data.release.artwork.url) ? data.release.artwork.url : "";
+  if (disc && data.release && data.release.title) {
+    disc.setAttribute("data-album-label", String(data.release.title).toUpperCase());
+  }
+  if (artImg) {
+    if (artUrl) {
+      artImg.src = artUrl;
+      artImg.alt = (data.release && data.release.title) ? data.release.title + " cover art" : "Album cover art";
+      artImg.style.display = "";
+      artImg.onerror = () => {
+        artImg.style.display = "none";
+        if (disc) disc.style.display = "";
+      };
+      if (disc) disc.style.display = "none";
+    } else {
+      artImg.style.display = "none";
+      if (disc) disc.style.display = "";
+    }
+  }
+
+  // ---- Music library ----
+  const musicGrid = document.getElementById("musicGrid");
+  if (musicGrid && Array.isArray(data.music) && data.music.length) {
+    musicGrid.innerHTML = data.music.map(renderReleaseCardHTML).join("");
+    // Wire up "Play video" toggles
+    musicGrid.querySelectorAll("[data-play-video]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".release-card-row");
+        const wrap = card.querySelector(".video-wrap");
+        const player = wrap.querySelector("[data-player]");
+        // The text-label only exists on the "Watch Video" button — not the album-art button.
+        // Find it via the card so either trigger keeps the label in sync.
+        const watchLabel = card.querySelector("[data-play-video] .btn-label");
+        const songTitle = btn.dataset.songTitle || "";
+        if (wrap.classList.contains("open")) {
+          wrap.classList.remove("open");
+          player.innerHTML = ""; // stop video
+          if (watchLabel) watchLabel.textContent = "Watch Video";
+        } else {
+          const fileUrl = btn.dataset.fileUrl || "";
+          const embed   = btn.dataset.embedUrl || "";
+          // Embed URL (YouTube/Vimeo) wins when both are set; uploaded MP4 is the fallback
+          if (embed) {
+            const eu = toEmbedUrl(embed);
+            player.innerHTML = `<iframe src="${eu}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+          } else if (fileUrl) {
+            player.innerHTML = `<video controls preload="metadata" src="${fileUrl}"></video>`;
+          }
+          wrap.classList.add("open");
+          if (watchLabel) watchLabel.textContent = "Close Video";
+          // —— analytics: count this as a song play (only on open, not close) ——
+          if (window.SGData && SGData.trackEvent) {
+            SGData.trackEvent("song_play", {
+              song_id: songTitle,
+              song_title: songTitle,
+              section: "music",
+              meta: { source: btn.classList.contains("art-button") ? "artwork" : "button" }
+            });
+          }
+        }
+      });
+    });
+
+    // —— analytics: streaming-platform link clicks ——
+    musicGrid.querySelectorAll("[data-stream-link]").forEach(a => {
+      a.addEventListener("click", () => {
+        if (!window.SGData || !SGData.trackEvent) return;
+        SGData.trackEvent("platform_click", {
+          song_id: a.dataset.songTitle || "",
+          song_title: a.dataset.songTitle || "",
+          platform: a.dataset.platform || "",
+          section: "music"
+        });
+      });
+    });
+  }
+
+  function renderReleaseCardHTML(m) {
+    const art    = (m.artwork && m.artwork.url) ? m.artwork.url : "";
+    const fileV  = (m.video && m.video.url) ? m.video.url : "";
+    const embedV = (m.video && m.video.embedUrl) ? m.video.embedUrl : "";
+    const hasVideo = !!(fileV || embedV);
+    const dlFile = (m.download && m.download.url) ? m.download.url : "";
+    const dlExt  = (m.download && m.download.externalUrl) ? m.download.externalUrl : "";
+    const hasDl  = !!(dlFile || dlExt);
+    const s = m.streaming || {};
+    const platforms = [
+      ["spotify", "Spotify", s.spotify],
+      ["apple", "Apple", s.apple],
+      ["amazon", "Amazon", s.amazon],
+      ["soundcloud", "SoundCloud", s.soundcloud],
+      ["youtube", "YouTube", s.youtube],
+      ["pandora", "Pandora", s.pandora]
+    ].filter(p => p[2] && /^https?:/i.test(p[2]));
+
+    // Stable song identifier for analytics — use title (no formal id field exists yet).
+    const songTitle = (m.title || "Untitled").trim();
+    const songIdAttr = escapeAttr(songTitle);
+
+    // When there's a video, the album art doubles as a play button — it shares the
+    // same data-play-video attributes as the Watch Video button so the existing
+    // click handler toggles the embedded player.
+    // Use a real <img> with loading="lazy" + decoding="async" so off-screen
+    // album art is deferred by the browser until the user scrolls near it.
+    // Falls back gracefully if the image fails.
+    const artImgTag = art
+      ? `<img class="art-img" src="${escapeAttr(art)}" alt="${escapeAttr(songTitle)} cover art" loading="lazy" decoding="async" fetchpriority="low">`
+      : "";
+    const artHTML = art
+      ? (hasVideo
+          ? `<button type="button" class="art art-button" data-play-video data-song-title="${songIdAttr}" data-file-url="${escapeAttr(fileV)}" data-embed-url="${escapeAttr(embedV)}" aria-label="Play video">
+               ${artImgTag}
+               <span class="play-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 21,12 5,21"/></svg></span>
+             </button>`
+          : `<div class="art">${artImgTag}</div>`)
+      : `<div class="art" style="display:grid;place-items:center;color:rgba(255,255,255,0.35);font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:11px">No Artwork</div>`;
+
+    const videoBtn = hasVideo
+      ? `<button class="btn-red" type="button" data-play-video data-song-title="${songIdAttr}" data-file-url="${escapeAttr(fileV)}" data-embed-url="${escapeAttr(embedV)}">
+           <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 21,12 5,21"/></svg>
+           <span class="btn-label">Watch Video</span>
+         </button>`
+      : "";
+
+    let dlHTML = "";
+    if (hasDl) {
+      const dlUrl = dlFile || dlExt;
+      // For Supabase-hosted MP3 files, add the download attribute to force download
+      const downloadAttr = dlFile ? ` download` : "";
+      dlHTML = `<a class="btn-ghost" href="${escapeAttr(dlUrl)}" target="_blank" rel="noopener"${downloadAttr}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>`;
+    }
+
+    const streamHTML = platforms.length
+      ? `<div class="stream-mini">${platforms.map(p => `<a href="${escapeAttr(p[2])}" target="_blank" rel="noopener" data-stream-link data-platform="${escapeAttr(p[0])}" data-song-title="${songIdAttr}">${p[1]}</a>`).join("")}</div>`
+      : "";
+
+    const descHTML = m.description ? `<p class="desc">${escapeHtml(m.description).replace(/\n/g, "<br>")}</p>` : "";
+
+    return `
+    <article class="release-card-row">
+      ${artHTML}
+      <div>
+        <h3>${escapeHtml(m.title || "Untitled")}</h3>
+        <div class="meta">${escapeHtml(m.meta || "")}</div>
+        ${descHTML}
+        <div class="row-actions">${videoBtn}${dlHTML}</div>
+        ${streamHTML}
+        <div class="video-wrap"><div data-player style="width:100%;height:100%"></div></div>
+      </div>
+    </article>`;
+  }
+
+  // Convert any YouTube or Vimeo URL into an embeddable form
+  function toEmbedUrl(u) {
+    try {
+      const url = new window.URL(u);
+      const host = url.hostname.replace(/^www\./, "");
+      // YouTube
+      if (host === "youtu.be") {
+        return `https://www.youtube.com/embed/${url.pathname.slice(1)}`;
+      }
+      if (host === "youtube.com" || host === "m.youtube.com") {
+        if (url.pathname === "/watch") {
+          const v = url.searchParams.get("v");
+          if (v) return `https://www.youtube.com/embed/${v}`;
+        }
+        if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/")) {
+          const id = url.pathname.split("/")[2];
+          return `https://www.youtube.com/embed/${id}`;
+        }
+      }
+      // Vimeo
+      if (host === "vimeo.com") {
+        const id = url.pathname.replace(/[^0-9]/g, "");
+        if (id) return `https://player.vimeo.com/video/${id}`;
+      }
+      if (host === "player.vimeo.com") return u;
+      return u; // fall back: try the raw URL in the iframe
+    } catch (e) {
+      return u;
+    }
+  }
+
+  // ---- Tour dates ----
+  const tourList = document.getElementById("tourList");
+  if (tourList && Array.isArray(data.tour)) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const upcoming = data.tour
+      .filter(s => s.date && new Date(s.date) >= today)
+      .sort((a,b) => a.date.localeCompare(b.date));
+    if (upcoming.length) {
+      tourList.innerHTML = upcoming.map(s => {
+        const d = new Date(s.date + "T00:00:00");
+        const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        const venue = escapeHtml(s.venue || "TBA");
+        const city = escapeHtml(s.city || "");
+        const notes = s.notes ? `<span style="display:block;margin-top:4px;">${escapeHtml(s.notes)}</span>` : "";
+        const btn = s.ticketUrl
+          ? `<a href="${escapeAttr(s.ticketUrl)}" target="_blank" rel="noopener" class="btn-red" style="padding:8px 14px">Tickets</a>`
+          : `<span style="color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Soon</span>`;
+        return `<div class="track">
+          <div><strong>${dateStr} · ${venue}</strong><span>${city}${notes ? " " + notes : ""}</span></div>
+          ${btn}
+        </div>`;
+      }).join("");
+    }
+  }
+
+  // ---- Photos ----
+  const photoGrid = document.getElementById("photoGrid");
+  if (photoGrid && Array.isArray(data.photos) && data.photos.length) {
+    photoGrid.innerHTML = data.photos.map(p => {
+      const src = p.url || p.dataUrl; // prefer cloud URL, fall back to legacy data URL
+      const alt = p.caption ? escapeAttr(p.caption) : "Band photo";
+      return `
+      <div class="photo-tile" style="color:transparent;">
+        <img src="${escapeAttr(src)}" alt="${alt}" loading="lazy" decoding="async" fetchpriority="low" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+        ${p.caption ? `<span style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);color:#fff;padding:6px 10px;font-size:12px;letter-spacing:.06em;text-transform:none;font-weight:500;z-index:1;">${escapeHtml(p.caption)}</span>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function escapeAttr(s){ return String(s).replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+})();
+</script>
+
+<!-- ====== Text Club Modal (EZ Texting) ====== -->
+<div class="booking-modal-overlay" id="textclubOverlay" role="dialog" aria-modal="true" aria-labelledby="textclubTitle" aria-hidden="true">
+  <div class="textclub-modal">
+    <button type="button" class="textclub-close" id="textclubClose" aria-label="Close">×</button>
+    <link rel="stylesheet" href="https://cdn.eztexting.com/assets/signup-forms/signup-forms-styles.min.css" type="text/css">
+    <form class="c-web-form" ngNoForm method="POST" action="https://widgy-lb.prd.cfire.io/EZ/widget/subscribe">
+      <input type="hidden" name="serializedData" id="jwt" value="eyJlbmMiOiJBMTI4R0NNIiwiYnJhbmQiOiJFWiIsImFsZyI6ImRpciIsIndpZGdldElkIjoiZDk2YzhjYmYtZTA4ZC00MWE4LTg0ZGQtZDEwMzM0MDA1ZDE2In0..2MMBPgg4ZdNveyVr.fx6FvoSKAAnApAmq8wOGFWPRRfjg5y3drGREFJZsCejG6oKTrkd1nMisrmXij4ENV3ZO9Ezk0QYltL2y-zHL8lSU9vnB-qLCWfdiwFkglAmvBf2K2JwTvO2eta4HVFaCWs1rusriD9ghJIAZ5VU1oPr6joxYQ1PHpcwrd0FjlcsBlGKcprFMzGd553lox8qXYoaQ6g9zyQSDXfZi3yslvCHdKGh9aOFSELs-EVYtX_-TVQ.v2I55JLiBzeprarfSSv6Ew">
+      <div class="c-web-form__title" id="textclubTitle">Join our Text Club!</div>
+      <div class="c-web-form__description">Sign up to be the first to know of Slightly Gigantic shows &amp; new music!</div>
+      <ul class="c-web-form__be-errors"></ul>
+      <div class="c-web-form__control-group">
+        <label class="c-web-form__label c-web-form-uppercase-text" for="c-web-form-phoneNumber">Phone Number*</label>
+        <div class="c-web-form__error" id="c-web-form-phoneNumber-error"></div>
+        <input value="" class="c-web-form__input c-web-form--input-required" type="tel" name="phoneNumber" id="c-web-form-phoneNumber" maxlength="20">
+      </div>
+      <div class="c-web-form__control-group">
+        <label class="c-web-form__label c-web-form-uppercase-text" for="c-web-form-firstName">First Name*</label>
+        <div class="c-web-form__error"></div>
+        <input value="" class="c-web-form__input c-web-form-text-validate c-web-form--input-required" type="text" name="firstName" id="c-web-form-firstName" maxlength="20">
+      </div>
+      <div class="c-web-form__control-group">
+        <label class="c-web-form__label c-web-form-uppercase-text" for="c-web-form-lastName">Last Name</label>
+        <div class="c-web-form__error"></div>
+        <input value="" class="c-web-form__input c-web-form-text-validate" type="text" name="lastName" id="c-web-form-lastName" maxlength="20">
+      </div>
+      <div class="c-web-form__control-group">
+        <label class="c-web-form__label c-web-form-uppercase-text" for="c-web-form-email">Email Address</label>
+        <div class="c-web-form__error" id="c-web-form-email-error"></div>
+        <input value="" class="c-web-form__input" type="email" name="email" maxlength="100" placeholder="email@example.com" id="c-web-form-email">
+      </div>
+      <div class="c-web-form__control-group">
+        <label class="c-web-form__label c-web-form-uppercase-text" for="Custom1">State</label>
+        <div class="c-web-form__error"></div>
+        <input id="Custom1" value="" class="c-web-form__input c-web-form-text-validate" name="Custom3" maxlength="50">
+      </div>
+      <div class="c-web-form__control-group">
+        <input class="c-web-form__checkbox" type="checkbox" id="c-web-form-agree" onchange="this.closest('form').querySelector('.c-web-form__submit').toggleAttribute('disabled', !this.checked)">
+        <label class="c-web-form__label" for="c-web-form-agree">By checking this box, I agree to receive promotional text messages from Slightly Gigantic / A.G. Entertainment about upcoming shows, new music, and offers (up to 4 msgs/month). Consent is not a condition of any purchase. Msg &amp; data rates may apply. Msg frequency varies. Reply HELP for help or STOP to cancel at any time. See our <a href="/terms" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</label>
+      </div>
+      <div class="c-web-form__control-group">
+        <button type="submit" class="c-web-form__submit" disabled>Sign Up</button>
+      </div>
+      <p class="c-success-message">Thanks for joining! Watch for a confirmation text.</p>
+      <div class="c-web-form__footer">
+        <strong>SMS Program:</strong> Slightly Gigantic Text Club — promotional messages about shows, tour dates, new releases, and offers. Up to 4 msgs/month. Msg &amp; data rates may apply. Reply HELP for help, STOP to unsubscribe. No mobile information will be shared with third parties or affiliates for marketing/promotional purposes at any time. Full terms: <a class="c-web-form__link" href="/terms" target="_blank" rel="noopener">Terms of Service</a> · <a class="c-web-form__link" href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+        <br><br>
+        <i>Powered by <a class="c-web-form__link c-web-form-semibold-text" href="https://eztexting.com" target="_blank" rel="noopener">EZ Texting</a></i>
+      </div>
+    </form>
+    <script type="text/javascript" src="https://cdn.eztexting.com/assets/signup-forms/signup-forms-validation.min.js"></script>
+  </div>
+</div>
+
+<script>
+/* ====== Text Club modal controller ====== */
+(function(){
+  var overlay  = document.getElementById('textclubOverlay');
+  var closeBtn = document.getElementById('textclubClose');
+  if (!overlay) return;
+  function closeModal(){
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  closeBtn && closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+  });
+})();
+</script>
+
+<!-- ====== Booking Request Modal ====== -->
+<div class="booking-modal-overlay" id="bookingOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" aria-hidden="true">
+  <div class="booking-modal">
+    <button type="button" class="booking-close" id="bookingClose" aria-label="Close">×</button>
+    <h2 id="bookingTitle">Book Slightly Gigantic</h2>
+    <p class="booking-sub">Tell us about your event — we'll get back to you soon.</p>
+    <form id="bookingForm" class="booking-form" novalidate>
+      <input type="text" name="_gotcha" class="bf-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="hidden" name="_subject" value="Booking request from slightlygigantic.com">
+      <div class="bf-row two">
+        <div><label for="bkName">Your Name</label><input id="bkName" name="name" type="text" required></div>
+        <div><label for="bkOrg">Organization (optional)</label><input id="bkOrg" name="organization" type="text"></div>
+      </div>
+      <div class="bf-row two">
+        <div><label for="bkEmail">Email</label><input id="bkEmail" name="email" type="email" required></div>
+        <div><label for="bkPhone">Phone</label><input id="bkPhone" name="phone" type="tel"></div>
+      </div>
+      <div class="bf-row two">
+        <div><label for="bkDate">Event Date</label><input id="bkDate" name="event_date" type="date"></div>
+        <div><label for="bkType">Event Type</label>
+          <select id="bkType" name="event_type">
+            <option value="">Select…</option>
+            <option>Private Party</option>
+            <option>Wedding</option>
+            <option>Corporate Event</option>
+            <option>Festival</option>
+            <option>Venue / Club</option>
+            <option>Fundraiser</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="bf-row two">
+        <div><label for="bkVenue">Venue / City</label><input id="bkVenue" name="venue" type="text" placeholder="e.g. Milwaukee, WI"></div>
+        <div><label for="bkAttendees">Expected Attendance</label><input id="bkAttendees" name="attendance" type="text" placeholder="e.g. 200"></div>
+      </div>
+      <div class="bf-row">
+        <div><label for="bkMessage">Details</label><textarea id="bkMessage" name="message" placeholder="Set length, budget range, special requests, etc."></textarea></div>
+      </div>
+      <div class="booking-actions">
+        <button type="submit" id="bkSubmit" class="btn-red">Send Booking Request</button>
+        <button type="button" id="bkCancel" class="btn-ghost">Cancel</button>
+      </div>
+      <p id="bkStatus" class="booking-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ====== Booking modal controller ====== */
+(function(){
+  const overlay  = document.getElementById('bookingOverlay');
+  const openBtn  = document.getElementById('openBookingBtn');
+  const closeBtn = document.getElementById('bookingClose');
+  const cancelBtn= document.getElementById('bkCancel');
+  const form     = document.getElementById('bookingForm');
+  const status   = document.getElementById('bkStatus');
+  const submitBtn= document.getElementById('bkSubmit');
+  if (!overlay || !form) return;
+
+  function openModal(e){
+    if (e) e.preventDefault();
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(()=>{ const f = document.getElementById('bkName'); f && f.focus(); }, 50);
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  openBtn  && openBtn.addEventListener('click', openModal);
+  closeBtn && closeBtn.addEventListener('click', closeModal);
+  cancelBtn&& cancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+  // Also open if URL hash is #book on page load
+  if (location.hash === '#book') openModal();
+
+  // Get current site data resolved by sg-data.js (it stores last applied content on window.__SG_CONTENT__)
+  function getContact(){
+    const c = (window.__SG_CONTENT__ && window.__SG_CONTENT__.contact) || {};
+    return {
+      email:       (c.bookingEmail || c.email || '').trim(),
+      formspreeUrl:(c.formspreeUrl || '').trim()
+    };
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    // Honeypot
+    const trap = form.querySelector('input[name="_gotcha"]');
+    if (trap && trap.value) { status.className='booking-status success'; status.textContent='Thanks — we\u2019ll be in touch.'; form.reset(); return; }
+    // Required fields
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    if (!name || !email) { status.className='booking-status error'; status.textContent='Please enter your name and email.'; return; }
+
+    status.className = 'booking-status sending';
+    status.textContent = 'Sending booking request…';
+    submitBtn.disabled = true;
+
+    const { email: routeEmail, formspreeUrl } = getContact();
+    const fd = new FormData(form);
+    fd.set('_subject', 'Booking request from ' + name + (form.organization.value ? ' (' + form.organization.value + ')' : ''));
+
+    if (formspreeUrl && /^https?:\/\//i.test(formspreeUrl)) {
+      try {
+        const res = await fetch(formspreeUrl, { method:'POST', headers:{ Accept:'application/json' }, body: fd });
+        if (res.ok) {
+          status.className='booking-status success';
+          status.textContent='Booking request sent. We\u2019ll get back to you soon.';
+          form.reset();
+          setTimeout(closeModal, 1800);
+        } else {
+          let msg=''; try{ const j=await res.json(); msg=(j.errors||[]).map(x=>x.message).join(', ');}catch(_){}
+          status.className='booking-status error';
+          status.textContent = 'Couldn\u2019t send (' + (msg || res.status) + '). ' + (routeEmail ? 'Falling back to your email app…' : 'Please email us directly.');
+          if (routeEmail) setTimeout(()=> sendMailto(routeEmail, fd), 800);
+        }
+      } catch(err){
+        console.error('[booking] submit failed:', err);
+        status.className='booking-status error';
+        status.textContent = 'Network error. ' + (routeEmail ? 'Opening your email app…' : 'Please try again.');
+        if (routeEmail) setTimeout(()=> sendMailto(routeEmail, fd), 800);
+      }
+    } else if (routeEmail) {
+      sendMailto(routeEmail, fd);
+      status.className='booking-status success';
+      status.textContent = 'Opening your email app to send the request…';
+      // —— analytics: booking submitted via mailto fallback ——
+      if (window.SGData && SGData.trackEvent) {
+        SGData.trackEvent('booking_submit', {
+          section: 'booking',
+          meta: { delivery: 'mailto' }
+        });
+      }
+    } else {
+      status.className='booking-status error';
+      status.textContent = 'Booking isn\u2019t configured yet — please reach out via the social links.';
+    }
+    submitBtn.disabled = false;
+  });
+
+  function sendMailto(to, fd){
+    const lines = [];
+    const push = (label, key) => { const v = (fd.get(key)||'').toString().trim(); if (v) lines.push(label + ': ' + v); };
+    push('Name','name');
+    push('Organization','organization');
+    push('Email','email');
+    push('Phone','phone');
+    push('Event Date','event_date');
+    push('Event Type','event_type');
+    push('Venue / City','venue');
+    push('Expected Attendance','attendance');
+    const msg = (fd.get('message')||'').toString().trim();
+    if (msg) { lines.push(''); lines.push('Details:'); lines.push(msg); }
+    const subject = (fd.get('_subject')||'Booking request from slightlygigantic.com').toString();
+    const href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+    window.location.href = href;
+  }
+})();
+
+/* ====== Page-level analytics ====== */
+(function(){
+  function sectionFromHash(){
+    var h = (location.hash || '').replace(/^#/, '').toLowerCase();
+    if (!h) return 'home';
+    // Strip query/fragments
+    h = h.split('?')[0].split('/')[0];
+    return h || 'home';
+  }
+
+  function fireWhenReady(fn){
+    if (window.SGData && SGData.trackEvent) { fn(); return; }
+    // sg-data.js loads at the head; retry briefly if it's not on window yet
+    var tries = 0;
+    var iv = setInterval(function(){
+      if ((window.SGData && SGData.trackEvent) || ++tries > 20) {
+        clearInterval(iv);
+        if (window.SGData && SGData.trackEvent) fn();
+      }
+    }, 100);
+  }
+
+  // Initial page visit
+  fireWhenReady(function(){
+    SGData.trackEvent('page_visit', { section: sectionFromHash() });
+  });
+
+  // Nav clicks (the icon row — Bio / Music / Photos / Merch / Admin)
+  document.querySelectorAll('.nav a').forEach(function(a){
+    a.addEventListener('click', function(){
+      if (!window.SGData || !SGData.trackEvent) return;
+      var href = (a.getAttribute('href') || '').toLowerCase();
+      var sec = href.replace(/^.*#/, '') || href.replace(/^\//, '') || 'unknown';
+      SGData.trackEvent('nav_click', {
+        section: sec,
+        meta: { href: a.getAttribute('href') || '' }
+      });
+    });
+  });
+
+  // Brand-bar booking CTA — also count as a nav_click for "booking" so the section
+  // totals reflect interest. The booking_open event is tracked separately by the modal.
+  var bookCta = document.getElementById('openBookingBtn');
+  if (bookCta) {
+    bookCta.addEventListener('click', function(){
+      if (window.SGData && SGData.trackEvent) {
+        SGData.trackEvent('nav_click', { section: 'booking', meta: { source: 'brandbar' } });
+      }
+    });
+  }
+})();
+</script>
+
+<script>
+/* ====== Live phone number formatting for all tel inputs ======
+   Displays as the user types:  (555) 123-4567
+   On form submit, strips back to digits so backend validation passes. */
+(function(){
+  function formatPhone(digits){
+    digits = (digits || '').replace(/\D/g, '').slice(0, 10);
+    var len = digits.length;
+    if (len === 0) return '';
+    if (len < 4)  return '(' + digits;
+    if (len < 7)  return '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+    return '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6,10);
+  }
+
+  function attach(input){
+    if (!input || input.__sgPhoneFmt) return;
+    input.__sgPhoneFmt = true;
+    input.setAttribute('inputmode', 'tel');
+    input.setAttribute('autocomplete', 'tel');
+    if (!input.getAttribute('placeholder')) input.setAttribute('placeholder', '(555) 123-4567');
+    // Cap to formatted length: "(555) 123-4567" = 14 chars
+    input.setAttribute('maxlength', '14');
+
+    input.addEventListener('input', function(e){
+      var cursorAtEnd = (input.selectionStart === input.value.length);
+      var formatted = formatPhone(input.value);
+      if (input.value !== formatted){
+        input.value = formatted;
+        if (cursorAtEnd) {
+          try { input.setSelectionRange(formatted.length, formatted.length); } catch(_){}
+        }
+      }
+    });
+
+    input.addEventListener('blur', function(){
+      input.value = formatPhone(input.value);
+    });
+
+    // On the parent form submit, strip to digits so EZ Texting / Formspree see a clean number.
+    var form = input.form;
+    if (form && !form.__sgPhoneStrip){
+      form.__sgPhoneStrip = true;
+      form.addEventListener('submit', function(){
+        Array.prototype.forEach.call(form.querySelectorAll('input[type="tel"]'), function(t){
+          t.value = (t.value || '').replace(/\D/g, '');
+        });
+      }, true); // capture so it runs before EZ Texting's own submit handler
+    }
+  }
+
+  function scan(){
+    Array.prototype.forEach.call(document.querySelectorAll('input[type="tel"]'), attach);
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', scan);
+  } else {
+    scan();
+  }
+  // Re-scan periodically for inputs injected late (EZ Texting widget rebuilds DOM)
+  setTimeout(scan, 500);
+  setTimeout(scan, 1500);
+})();
+</script>
+
+</body>
+</html>

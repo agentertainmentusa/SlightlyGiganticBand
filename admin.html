@@ -1,0 +1,2565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin · Slightly Gigantic</title>
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+<link rel="shortcut icon" href="images/favicon.ico">
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20260715a">
+<script src="config.js?v=20260715a"></script>
+<script src="sg-data.js?v=20260715a"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<!-- HEIC → JPEG decoder (lazy-used only when an .heic file is dropped in). -->
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0606;
+    --panel: rgba(0,0,0,0.78);
+    --panel-2: rgba(255,255,255,0.04);
+    --line: rgba(255,255,255,0.18);
+    --line-strong: rgba(255,255,255,0.32);
+    --text: #f1f1f1;
+    --muted: #b6b1ad;
+    --red: #e21e26;
+    --red-bright: #ff2b32;
+    --green: #2ecc71;
+    --display: "Bebas Neue", Impact, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #050202; color: var(--text); font-family: var(--body); min-height: 100dvh; }
+  a { color: var(--red); text-decoration: none; }
+  a:hover { color: var(--red-bright); text-decoration: underline; }
+  img { max-width: 100%; display: block; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+
+  /* Atmospheric backdrop */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(226,30,38,0.18), transparent 35%),
+      radial-gradient(circle at 90% 100%, rgba(226,30,38,0.10), transparent 40%),
+      linear-gradient(180deg, #0d0606 0%, #050202 100%);
+    pointer-events: none;
+  }
+
+  .shell { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* === Top bar === */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 28px;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 14px; }
+  .topbar .brand-logo {
+    width: 56px; height: 56px;
+    background: url("images/logo-256.png") center/contain no-repeat;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+    flex-shrink: 0;
+  }
+  .topbar h1 { font-family: var(--display); font-size: 32px; margin: 0; letter-spacing: 0.04em; text-transform: uppercase; }
+  .topbar h1 small { color: var(--red); font-size: 14px; letter-spacing: 0.24em; display: block; font-family: var(--body); font-weight: 800; margin-bottom: 2px; }
+  .topbar .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* === Buttons === */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border-radius: 4px; cursor: pointer;
+    font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-size: 13px;
+    border: 1px solid transparent;
+    transition: background .15s ease, border-color .15s ease, transform .15s ease, color .15s ease;
+    white-space: nowrap;
+  }
+  .btn-red { background: var(--red); color: #fff; box-shadow: 0 4px 18px rgba(226,30,38,0.32); }
+  .btn-red:hover { background: var(--red-bright); transform: translateY(-1px); }
+  .btn-ghost { background: rgba(255,255,255,0.04); color: #fff; border-color: var(--line); }
+  .btn-ghost:hover { border-color: var(--line-strong); background: rgba(255,255,255,0.08); }
+  .btn-danger { background: transparent; color: #ff6c70; border-color: rgba(255,108,112,0.4); }
+  .btn-danger:hover { background: rgba(255,108,112,0.1); border-color: #ff6c70; }
+  .btn-sm { padding: 6px 10px; font-size: 11px; letter-spacing: 0.08em; }
+
+  /* === Cards / sections === */
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; padding: 24px; margin-bottom: 20px;
+  }
+  .card-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  }
+  .card-head h2 {
+    font-family: var(--display); font-size: 30px; margin: 0;
+    letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  }
+  .eyebrow { color: var(--red); font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; margin-bottom: 4px; }
+  .help { color: var(--muted); font-size: 13px; margin: 0 0 14px; line-height: 1.5; }
+
+  /* === Form controls === */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .input, .textarea, .select {
+    width: 100%; padding: 10px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--body); font-size: 14px;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .input:focus, .textarea:focus, .select:focus { outline: none; border-color: var(--red); background: rgba(255,255,255,0.07); }
+  .textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+  /* === Tour dates list === */
+  .item-list { display: grid; gap: 12px; }
+  .item {
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 6px; padding: 16px; position: relative;
+  }
+  .item .item-actions {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; gap: 6px;
+  }
+  .empty {
+    padding: 24px; text-align: center; color: var(--muted);
+    border: 1px dashed var(--line); border-radius: 6px;
+  }
+
+  /* === Photo grid === */
+  .photo-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px; margin-top: 8px;
+  }
+  .photo-cell {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--line); border-radius: 4px;
+    background: #0c0c0c center / cover no-repeat;
+    overflow: hidden;
+  }
+  .photo-cell .photo-caption-input {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 6px 8px; font-size: 12px;
+    background: rgba(0,0,0,0.7); color: #fff; border: 0; border-top: 1px solid var(--line);
+  }
+  .photo-cell .photo-remove {
+    position: absolute; top: 6px; right: 6px;
+    width: 26px; height: 26px;
+    background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+    display: grid; place-items: center; cursor: pointer; color: #fff;
+  }
+  .photo-cell .photo-remove:hover { background: var(--red); border-color: var(--red); }
+  .photo-add {
+    border: 2px dashed var(--line); border-radius: 4px;
+    aspect-ratio: 4 / 3; display: grid; place-items: center;
+    cursor: pointer; color: var(--muted); text-align: center; padding: 12px;
+    font-size: 13px; transition: border-color .15s ease, color .15s ease;
+  }
+  .photo-add:hover { border-color: var(--red); color: var(--red); }
+  .photo-add svg { width: 28px; height: 28px; margin-bottom: 6px; }
+  .photo-add input { display: none; }
+
+  /* === Login gate === */
+  .login {
+    max-width: 380px; margin: 12vh auto 0;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 32px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .login h2 { font-family: var(--display); font-size: 36px; margin: 0 0 6px; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; }
+  .login .sub { color: var(--muted); font-size: 13px; margin: 0 0 20px; }
+  .login .error { color: #ff6c70; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  .login form { display: grid; gap: 12px; }
+  .login .hint { color: var(--muted); font-size: 12px; margin-top: 14px; text-align: center; line-height: 1.5; }
+  .lock-icon { width: 44px; height: 44px; color: var(--red); margin-bottom: 16px; }
+
+  /* === Toast === */
+  .toast {
+    position: fixed; left: 50%; bottom: 30px;
+    transform: translateX(-50%) translateY(30px);
+    background: #0c0c0c; color: #fff;
+    border: 1px solid var(--line-strong);
+    padding: 12px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); }
+  .toast.success::before { content: "✓ "; color: var(--green); font-weight: 800; }
+
+  /* === Save bar === */
+  .savebar {
+    position: sticky; bottom: 16px; z-index: 50;
+    background: rgba(0,0,0,0.92);
+    border: 1px solid var(--red);
+    border-radius: 6px; padding: 14px 20px;
+    display: none; align-items: center; justify-content: space-between; gap: 14px;
+    margin-top: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+  .savebar.visible { display: flex; }
+  .savebar .unsaved { color: var(--red); font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px; }
+
+  /* === Hidden utility === */
+  .hidden { display: none !important; }
+
+  /* === Analytics === */
+  .range-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .range-tab {
+    appearance: none; -webkit-appearance: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line); color: var(--muted);
+    border-radius: 4px; padding: 6px 12px;
+    font: 700 11px/1 var(--body);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer; transition: all 160ms ease;
+  }
+  .range-tab:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+  .range-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+  .kpi-grid {
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    margin: 14px 0 22px;
+  }
+  .kpi {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .kpi-label {
+    color: var(--muted); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 800; margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-family: var(--display); font-size: 30px; line-height: 1;
+    color: #fff; letter-spacing: 0.02em;
+  }
+  .analytics-grid {
+    display: grid; gap: 20px;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 880px) { .analytics-grid { grid-template-columns: 1fr; } }
+  .chart-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--line);
+    border-radius: 6px; padding: 16px;
+  }
+  .chart-block h3 {
+    margin: 0 0 10px; font: 800 11px/1 var(--body);
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+  }
+  .chart-block.full { grid-column: 1 / -1; }
+  .chart-canvas-wrap { position: relative; height: 240px; }
+  .chart-canvas-wrap.tall { height: 280px; }
+  .bar-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .bar-table th, .bar-table td {
+    padding: 8px 4px; border-bottom: 1px solid var(--line);
+    text-align: left; vertical-align: middle;
+  }
+  .bar-table th { color: var(--muted); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; }
+  .bar-table td.n { text-align: right; font-variant-numeric: tabular-nums; color: #fff; font-weight: 700; }
+  .bar-cell { position: relative; }
+  .bar-fill {
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    height: 22px; background: linear-gradient(90deg, rgba(226,30,38,0.55), rgba(226,30,38,0.18));
+    border-radius: 3px; z-index: 0; pointer-events: none;
+  }
+  .bar-label { position: relative; z-index: 1; padding: 6px 8px; }
+  .analytics-empty {
+    text-align: center; color: var(--muted); padding: 30px 12px;
+    font-size: 13px; border: 1px dashed var(--line); border-radius: 6px;
+  }
+  .analytics-loading {
+    color: var(--muted); font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 800;
+  }
+  .analytics-error {
+    background: rgba(226,30,38,0.08); border: 1px solid rgba(226,30,38,0.35);
+    color: #ffb4b8; padding: 10px 14px; border-radius: 4px; font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .topbar { flex-direction: column; align-items: flex-start; }
+    .topbar h1 { font-size: 26px; }
+    .item .item-actions { position: static; margin-top: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===== LOGIN GATE ===== -->
+  <div id="loginView" class="login">
+    <div style="width:120px; height:120px; margin: 0 auto 18px; background:url('images/logo-256.png') center/contain no-repeat; filter:drop-shadow(0 4px 18px rgba(0,0,0,0.6));" aria-hidden="true"></div>
+    <div class="eyebrow">Restricted</div>
+    <h2>Admin Sign-In</h2>
+    <p class="sub">Enter the password to manage tour dates, photos, and release info.</p>
+    <form id="loginForm">
+      <input id="pwInput" class="input" type="password" placeholder="Password" autocomplete="current-password" autofocus>
+      <button type="submit" class="btn btn-red">Unlock</button>
+      <div class="error" id="loginError"></div>
+    </form>
+    <p class="hint">Forgot the password? Ask whoever set up the site to reset it.<br>If this is a fresh install, the default is <strong>slightly2026</strong> — change it from inside the admin panel before going live.</p>
+  </div>
+
+  <!-- ===== ADMIN APP ===== -->
+  <div id="appView" class="hidden">
+
+    <div class="topbar">
+      <div class="brand">
+        <a href="index.html" class="brand-logo" aria-label="Slightly Gigantic Home"></a>
+        <div>
+          <small style="color: var(--red); font-size: 11px; letter-spacing: 0.24em; font-weight: 800; font-family: var(--body); display:block;">SLIGHTLY GIGANTIC</small>
+          <h1>Admin Panel</h1>
+        </div>
+      </div>
+      <div class="actions">
+        <a href="index.html" class="btn btn-ghost">View Site →</a>
+        <a href="admin-guide.pdf?v=20260605m" target="_blank" rel="noopener" class="btn btn-ghost" title="How to use this admin panel (PDF)">Admin Guide</a>
+        <button class="btn btn-ghost" id="exportBtn" title="Download all content as JSON">Export</button>
+        <button class="btn btn-ghost" id="importBtn" title="Load content from a JSON file">Import</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+        <button class="btn btn-danger" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <section class="card" id="analyticsCard">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Site Activity</div>
+          <h2>Analytics</h2>
+        </div>
+        <div class="range-tabs" id="rangeTabs">
+          <button type="button" class="range-tab" data-range="1">Today</button>
+          <button type="button" class="range-tab active" data-range="7">7 days</button>
+          <button type="button" class="range-tab" data-range="30">30 days</button>
+          <button type="button" class="range-tab" data-range="0">All time</button>
+          <button type="button" class="btn btn-sm btn-ghost" id="refreshAnalytics" title="Refresh" style="margin-left:6px">↻</button>
+        </div>
+      </div>
+      <p class="help">How visitors interact with your site — song plays, streaming clicks, page visits, and booking activity. Updates live as people use the site.</p>
+
+      <div id="analyticsStatus" class="analytics-loading" style="margin: 8px 0 14px;">Loading…</div>
+      <div id="analyticsError" class="analytics-error" style="display:none"></div>
+
+      <div id="analyticsBody" style="display:none">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Page Visits</div><div class="kpi-value" id="kpiVisits">0</div></div>
+          <div class="kpi"><div class="kpi-label">Song Plays</div><div class="kpi-value" id="kpiPlays">0</div></div>
+          <div class="kpi"><div class="kpi-label">Platform Clicks</div><div class="kpi-value" id="kpiPlatform">0</div></div>
+          <div class="kpi"><div class="kpi-label">Booking Opens</div><div class="kpi-value" id="kpiBookOpen">0</div></div>
+          <div class="kpi"><div class="kpi-label">Booking Submits</div><div class="kpi-value" id="kpiBookSubmit">0</div></div>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="chart-block full">
+            <h3>Daily Activity</h3>
+            <div class="chart-canvas-wrap tall"><canvas id="dailyChart"></canvas></div>
+          </div>
+
+          <div class="chart-block">
+            <h3>Top Songs (by plays)</h3>
+            <div id="songsTable"></div>
+          </div>
+
+          <div class="chart-block">
+            <h3>Streaming Platforms (by clicks)</h3>
+            <div class="chart-canvas-wrap"><canvas id="platformChart"></canvas></div>
+          </div>
+
+          <div class="chart-block full">
+            <h3>Section Activity (page visits + nav clicks)</h3>
+            <div id="sectionTable"></div>
+          </div>
+
+          <div class="chart-block full">
+            <h3>Platform Clicks by Song</h3>
+            <div id="platformSongTable"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HERO BAND PHOTO ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Top Of Homepage</div>
+          <h2>Hero Band Photo</h2>
+        </div>
+        <button class="btn btn-danger btn-sm" id="heroRemoveBtn" style="display:none">Remove</button>
+      </div>
+      <p class="help">This is the big image at the top of the homepage (currently shows "Band Photo Here" on an empty stage). Upload a single hero shot. JPG or PNG, up to 5 MB.</p>
+      <div id="heroPhotoWrap" style="margin-top:14px;">
+        <label class="photo-add" id="heroPhotoLabel" style="max-width:520px;aspect-ratio:16/9;">
+          <input type="file" accept="image/*,.heic,.heif,image/heic,image/heif" id="heroPhotoInput">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          <strong>Upload Hero Photo</strong>
+          <span style="font-size:11px; opacity:.7; margin-top:4px;">JPG, PNG, HEIC · any size · up to 25 MB</span>
+        </label>
+        <div id="heroPhotoPreview" style="display:none;max-width:520px;width:100%;min-height:200px;border:1px solid rgba(255,255,255,0.18);background-color:#0c0c0c;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:6px;"></div>
+      </div>
+    </section>
+
+    <!-- ===== BAND BIO ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Band Story</div>
+          <h2>Bio</h2>
+        </div>
+      </div>
+      <p class="help">This appears in the "Bio" section of the homepage. Press Enter twice between paragraphs to create a new paragraph.</p>
+      <div class="field" style="margin-top:12px">
+        <label for="bio-body">Bio</label>
+        <textarea id="bio-body" class="input" data-bind="bio.body" rows="6" style="resize:vertical;line-height:1.55;font-family:inherit;" placeholder="Tell the band's story…"></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="bio-basedIn">Based In</label>
+          <input id="bio-basedIn" class="input" data-bind="bio.basedIn" placeholder="Milwaukee, WI">
+        </div>
+        <div class="field">
+          <label for="bio-style">Style</label>
+          <input id="bio-style" class="input" data-bind="bio.style" placeholder="Piano-Driven Stadium Pop">
+        </div>
+        <div class="field">
+          <label for="bio-booking">Booking</label>
+          <input id="bio-booking" class="input" data-bind="bio.booking" placeholder="Open">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MERCH STORE ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Storefront</div>
+          <h2>Merch Store</h2>
+        </div>
+      </div>
+      <p class="help">Link the “Shop Merch” button on the homepage (and the Merch nav link) to your store. Leave the URL blank to hide the merch card and nav link entirely.</p>
+      <div class="row">
+        <div class="field" style="flex:2">
+          <label for="merch-url">Store URL</label>
+          <input id="merch-url" class="input" type="url" data-bind="merch.url" placeholder="https://yourstore.com">
+        </div>
+        <div class="field">
+          <label for="merch-label">Button Label</label>
+          <input id="merch-label" class="input" type="text" data-bind="merch.label" placeholder="Shop Merch">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LATEST NEWS ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Top of Homepage</div>
+          <h2>Latest News</h2>
+        </div>
+      </div>
+      <p class="help">Shown in the bright red-accent card directly under the navigation. Use this for show announcements, single drops, press features, or anything you want fans to see first. The card stays hidden if both Headline and Body are empty.</p>
+      <div class="row" style="align-items:flex-start">
+        <div class="field" style="flex:0 0 180px">
+          <label>News Image (optional)</label>
+          <div id="news-img-preview" style="width:160px; height:160px; background:#1a0d0d; border:1px solid var(--line); border-radius:4px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <div id="news-img-empty" style="color:rgba(255,255,255,0.25); font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:800">No Image</div>
+            <img id="news-img-img" alt="News image preview" style="width:100%; height:100%; object-fit:cover; display:none;">
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+              <input id="news-img-upload" type="file" accept="image/*,.heic,.heif,image/heic,image/heif" style="display:none">
+              <span id="news-img-upload-label">Upload Image</span>
+            </label>
+            <button id="news-img-remove" class="btn btn-danger btn-sm" type="button" style="display:none">Remove</button>
+          </div>
+          <p class="help" style="margin-top:6px">Optional. Adds a photo to the left side of the news card.</p>
+        </div>
+        <div class="field" style="flex:1">
+          <div class="field">
+            <label for="news-headline">Headline</label>
+            <input id="news-headline" class="input" data-bind="news.headline" placeholder="New Single Out Friday">
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label for="news-body">Body</label>
+            <textarea id="news-body" class="input" data-bind="news.body" rows="3" placeholder="A short blurb — one or two sentences. Visitors see this before scrolling."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <div class="field" style="flex:2">
+          <label for="news-link-url">Button URL (optional)</label>
+          <input id="news-link-url" class="input" type="url" data-bind="news.linkUrl" placeholder="https://open.spotify.com/track/...">
+          <p class="help" style="margin:6px 0 0; font-size:11px">Leave blank to hide the button. The card itself still shows the headline/body.</p>
+        </div>
+        <div class="field">
+          <label for="news-link-label">Button Label</label>
+          <input id="news-link-label" class="input" type="text" data-bind="news.linkLabel" placeholder="Listen Now">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TEXT CLUB ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Header CTA</div>
+          <h2>Join Our Text Club</h2>
+        </div>
+      </div>
+      <p class="help">Adds a solid red “Join Text Club” button to the top of the homepage, right next to Booking. Clicking it opens a built-in EZ Texting signup form (already wired up). Toggle this off to hide the button entirely.</p>
+      <div class="row" style="align-items:flex-end">
+        <div class="field" style="flex:0 0 auto">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none">
+            <input id="textclub-enabled" type="checkbox" data-bind="textClub.enabled" style="width:18px; height:18px; accent-color:#d4252a; cursor:pointer">
+            <span>Show “Join Text Club” button</span>
+          </label>
+        </div>
+        <div class="field" style="flex:1">
+          <label for="textclub-label">Button Label</label>
+          <input id="textclub-label" class="input" type="text" data-bind="textClub.label" placeholder="Join Text Club">
+        </div>
+      </div>
+      <div class="field" style="margin-top:6px">
+        <label for="textclub-url">External URL (optional override)</label>
+        <input id="textclub-url" class="input" type="url" data-bind="textClub.url" placeholder="Leave blank to use built-in EZ Texting form">
+        <p class="help" style="margin:6px 0 0; font-size:11px">Leave blank to use the built-in EZ Texting popup (recommended). Paste a full URL only if you want the button to open a different signup page in a new tab.</p>
+      </div>
+    </section>
+
+    <!-- ===== SOCIAL & CONTACT ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Follow & Reach Out</div>
+          <h2>Social & Contact</h2>
+        </div>
+      </div>
+      <p class="help">Links for the “Follow Slightly Gigantic” row in the footer area. Leave any field blank to hide that icon on the homepage.</p>
+      <div class="row">
+        <div class="field">
+          <label for="social-instagram">Instagram URL</label>
+          <input id="social-instagram" class="input" type="url" data-bind="social.instagram" placeholder="https://instagram.com/slightlygigantic">
+        </div>
+        <div class="field">
+          <label for="social-facebook">Facebook URL</label>
+          <input id="social-facebook" class="input" type="url" data-bind="social.facebook" placeholder="https://facebook.com/slightlygigantic">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="social-tiktok">TikTok URL</label>
+          <input id="social-tiktok" class="input" type="url" data-bind="social.tiktok" placeholder="https://tiktok.com/@slightlygigantic">
+        </div>
+        <div class="field">
+          <label for="social-youtube">YouTube Channel URL</label>
+          <input id="social-youtube" class="input" type="url" data-bind="social.youtube" placeholder="https://youtube.com/@slightlygigantic">
+        </div>
+      </div>
+
+      <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--line)">
+        <div class="eyebrow" style="margin-bottom:8px">Contact Form</div>
+        <p class="help">The Contact form on your homepage sends messages directly to your inbox. You have two options — you can use one or both:</p>
+
+        <div class="row" style="margin-top:14px">
+          <div class="field" style="flex:2">
+            <label for="contact-email">Contact Email (fallback)</label>
+            <input id="contact-email" class="input" type="email" data-bind="contact.email" placeholder="booking@slightlygigantic.com">
+            <p class="help" style="margin:6px 0 0; font-size:11px">If you don’t set up Formspree below, the form opens the visitor’s email client pre-filled with this address. Also used by the envelope icon in the “Follow” row.</p>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <div class="field" style="flex:2">
+            <label for="contact-formspree">Formspree Endpoint URL (recommended)</label>
+            <input id="contact-formspree" class="input" type="url" data-bind="contact.formspreeUrl" placeholder="https://formspree.io/f/xxxxxxxx">
+            <p class="help" style="margin:6px 0 0; font-size:11px">
+              <strong>Set this up in 2 minutes:</strong> Go to <a href="https://formspree.io" target="_blank" rel="noopener" style="color:var(--red); text-decoration:underline">formspree.io</a> → sign up (free — 50 messages/month) → click “New Form” → enter your email → copy the endpoint URL (looks like <code style="background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:3px">https://formspree.io/f/xxxxxxxx</code>) → paste it here → click Save Changes. Done. You’ll get an email for every message visitors send.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STREAMING PROFILES ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Now Streaming Row</div>
+          <h2>Streaming Profiles</h2>
+        </div>
+      </div>
+      <p class="help">These links power the "Now Streaming" icon row on the homepage. Each URL should point to the band's artist page (not a single song). Leave any field blank to hide that icon. If a field is blank, the homepage falls back to the matching link from "Latest Release".</p>
+      <div class="row">
+        <div class="field">
+          <label for="stream-spotify">Spotify Artist URL</label>
+          <input id="stream-spotify" class="input" type="url" data-bind="streaming.spotify" placeholder="https://open.spotify.com/artist/…">
+        </div>
+        <div class="field">
+          <label for="stream-apple">Apple Music Artist URL</label>
+          <input id="stream-apple" class="input" type="url" data-bind="streaming.apple" placeholder="https://music.apple.com/artist/…">
+        </div>
+        <div class="field">
+          <label for="stream-amazon">Amazon Music Artist URL</label>
+          <input id="stream-amazon" class="input" type="url" data-bind="streaming.amazon" placeholder="https://music.amazon.com/artists/…">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="stream-soundcloud">SoundCloud Artist URL</label>
+          <input id="stream-soundcloud" class="input" type="url" data-bind="streaming.soundcloud" placeholder="https://soundcloud.com/…">
+        </div>
+        <div class="field">
+          <label for="stream-youtube">YouTube Music / Channel URL</label>
+          <input id="stream-youtube" class="input" type="url" data-bind="streaming.youtube" placeholder="https://music.youtube.com/channel/…">
+        </div>
+        <div class="field">
+          <label for="stream-pandora">Pandora Artist URL</label>
+          <input id="stream-pandora" class="input" type="url" data-bind="streaming.pandora" placeholder="https://www.pandora.com/artist/…">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LATEST RELEASE ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Featured On Homepage</div>
+          <h2>Latest Release</h2>
+        </div>
+      </div>
+      <p class="help">This appears in the "Latest Release" card on the homepage. Streaming links use the platform you select.</p>
+      <div class="row" style="align-items:flex-start">
+        <div class="field" style="flex:0 0 180px">
+          <label>Album Artwork</label>
+          <div id="rel-art-preview" style="width:160px; height:160px; background:#1a0d0d; border:1px solid var(--line); border-radius:4px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <div id="rel-art-empty" style="color:rgba(255,255,255,0.25); font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:800">No Art</div>
+            <img id="rel-art-img" alt="Artwork preview" style="width:100%; height:100%; object-fit:cover; display:none;">
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+              <input id="rel-art-upload" type="file" accept="image/*,.heic,.heif,image/heic,image/heif" style="display:none">
+              <span id="rel-art-upload-label">Upload Artwork</span>
+            </label>
+            <button id="rel-art-remove" class="btn btn-danger btn-sm" type="button" style="display:none">Remove</button>
+          </div>
+          <p class="help" style="margin-top:6px">Square images look best (1:1).</p>
+        </div>
+        <div class="field" style="flex:1">
+          <div class="field">
+            <label for="rel-title">Title</label>
+            <input id="rel-title" class="input" data-bind="release.title" placeholder="Fade to Red">
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label for="rel-meta">Meta (e.g. "Single · 2024")</label>
+            <input id="rel-meta" class="input" data-bind="release.meta" placeholder="Single · 2024">
+          </div>
+        </div>
+      </div>
+      <p class="help" style="margin-top:18px">Streaming links. Leave any field blank to hide that icon on the homepage.</p>
+      <div class="row">
+        <div class="field">
+          <label for="rel-spotify">Spotify URL</label>
+          <input id="rel-spotify" class="input" data-bind="release.spotify" placeholder="https://open.spotify.com/...">
+        </div>
+        <div class="field">
+          <label for="rel-apple">Apple Music URL</label>
+          <input id="rel-apple" class="input" data-bind="release.apple" placeholder="https://music.apple.com/...">
+        </div>
+        <div class="field">
+          <label for="rel-amazon">Amazon Music URL</label>
+          <input id="rel-amazon" class="input" data-bind="release.amazon" placeholder="https://music.amazon.com/...">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="rel-soundcloud">SoundCloud URL</label>
+          <input id="rel-soundcloud" class="input" data-bind="release.soundcloud" placeholder="https://soundcloud.com/...">
+        </div>
+        <div class="field">
+          <label for="rel-youtube">YouTube URL</label>
+          <input id="rel-youtube" class="input" data-bind="release.youtube" placeholder="https://youtube.com/...">
+        </div>
+        <div class="field">
+          <label for="rel-pandora">Pandora URL</label>
+          <input id="rel-pandora" class="input" data-bind="release.pandora" placeholder="https://pandora.com/...">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MUSIC LIBRARY ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Tracks &amp; Videos</div>
+          <h2>Music Library</h2>
+        </div>
+        <button class="btn btn-red btn-sm" id="addMusicBtn">+ Add Release</button>
+      </div>
+      <p class="help">Add singles, EPs, or full albums. Each release can have artwork, a music video (upload an MP4 or paste a YouTube/Vimeo URL), and a downloadable audio file (upload an MP3 or link to an external download). Releases appear on the homepage in the order shown here — newest first.</p>
+      <div class="item-list" id="musicList"></div>
+    </section>
+
+    <!-- ===== TOUR DATES ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Schedule</div>
+          <h2>Tour Dates</h2>
+        </div>
+        <button class="btn btn-red btn-sm" id="addTourBtn">+ Add Show</button>
+      </div>
+      <p class="help">Past dates can be left in — the homepage automatically hides them after the show date passes. Reorder by editing the date.</p>
+      <div class="item-list" id="tourList"></div>
+    </section>
+
+    <!-- ===== BAND PHOTOS ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Press &amp; Live</div>
+          <h2>Band Photos</h2>
+        </div>
+      </div>
+      <p class="help">Upload promo or live photos. They appear in the Photos section of the homepage. Photos are stored in your browser — use <strong>Export</strong> to back them up.</p>
+      <div class="photo-grid" id="photoGrid">
+        <label class="photo-add" id="photoAddLabel">
+          <input type="file" accept="image/*,.heic,.heif,image/heic,image/heif" id="photoInput" multiple>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          <strong>Add Photo(s)</strong>
+          <span style="font-size:11px; opacity:.7; margin-top:4px;">JPG, PNG · up to 5 MB each</span>
+        </label>
+      </div>
+    </section>
+
+
+    <!-- ===== ACCOUNT SECURITY ===== -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">Login</div>
+          <h2>Account Security</h2>
+        </div>
+      </div>
+      <p class="help">Change the admin password that’s used to sign into this admin panel. After saving, you’ll be signed out and asked to log back in with the new password. The change is instant for everyone — anyone currently logged in elsewhere will also be signed out.</p>
+      <div class="row" style="align-items:flex-end">
+        <div class="field" style="flex:1">
+          <label for="pw-current">Current Password</label>
+          <input id="pw-current" class="input" type="password" autocomplete="current-password" placeholder="Enter current password">
+        </div>
+        <div class="field" style="flex:1">
+          <label for="pw-new">New Password</label>
+          <input id="pw-new" class="input" type="password" autocomplete="new-password" placeholder="At least 6 characters">
+        </div>
+        <div class="field" style="flex:1">
+          <label for="pw-confirm">Confirm New Password</label>
+          <input id="pw-confirm" class="input" type="password" autocomplete="new-password" placeholder="Re-enter new password">
+        </div>
+      </div>
+      <div class="row" style="align-items:center; margin-top:6px">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; font-size:13px; color:rgba(255,255,255,0.6)">
+          <input id="pw-show" type="checkbox" style="width:16px; height:16px; accent-color:#d4252a; cursor:pointer">
+          <span>Show passwords</span>
+        </label>
+        <div style="flex:1"></div>
+        <button id="pw-change-btn" type="button" class="btn btn-red btn-sm">Change Password</button>
+      </div>
+      <p id="pw-status" class="help" style="margin-top:10px; min-height:18px; font-size:13px"></p>
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer; font-size:12px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:.12em; font-weight:700">Tips for a strong password</summary>
+        <ul style="margin:8px 0 0 18px; font-size:12px; color:rgba(255,255,255,0.55); line-height:1.7">
+          <li>At least 10 characters</li>
+          <li>Mix uppercase, lowercase, numbers, and a symbol</li>
+          <li>Don’t reuse a password you use elsewhere</li>
+          <li>Store it in a password manager so the band doesn’t lose access</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===== Save bar ===== -->
+    <div class="savebar" id="savebar">
+      <span class="unsaved">● Unsaved changes</span>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost btn-sm" id="discardBtn">Discard</button>
+        <button class="btn btn-red btn-sm" id="saveBtn">Save Changes</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ===================================================================
+   Slightly Gigantic — Admin
+   - Password gate (configurable below; hashed at runtime)
+   - Content stored in localStorage under SG_CONTENT
+   - Photos stored as data URLs (base64) for portability
+   - Export/Import keeps everything in a single JSON file
+   =================================================================== */
+
+// ⚠️  CHANGE THIS BEFORE GOING LIVE.
+//     (Not high-security — anyone who reads the source can see it.
+//      For a real auth wall, you'll need a backend later.)
+const ADMIN_PASSWORD = "slightly2026";
+
+const STORAGE_KEY  = "SG_CONTENT_V1";   // local cache only (Supabase is source of truth)
+const SESSION_KEY  = "SG_ADMIN_AUTH";
+const PASS_KEY     = "SG_ADMIN_PASS";
+const MAX_PHOTO_BYTES = 25 * 1024 * 1024;  // 25 MB — Supabase Storage handles big files
+const MAX_IMAGE_DIMENSION = 2400;          // Long-edge cap for processed JPEGs (px)
+const JPEG_QUALITY = 0.9;                  // Output quality for re-encoded JPEGs
+
+// ---- Image preprocessing -------------------------------------------
+// Accepts any browser-readable image (JPG/PNG/WebP/GIF) AND iPhone HEIC/HEIF.
+// - Decodes HEIC via heic2any if needed.
+// - Reads the image (which strips EXIF rotation — the canvas handles orientation correctly).
+// - Downsizes large images to MAX_IMAGE_DIMENSION on the long edge.
+// - Re-encodes as JPEG for maximum browser compatibility (so iPhone HEIC works on Windows, etc).
+// Returns a Promise<File>. The original is returned untouched only for already-small, already-web-safe formats.
+async function prepareImageForUpload(file, opts) {
+  opts = opts || {};
+  if (!file) throw new Error("No file");
+
+  const name = (file.name || "image").toLowerCase();
+  const type = (file.type || "").toLowerCase();
+  const isHEIC =
+    /\.(heic|heif)$/i.test(name) ||
+    type === "image/heic" || type === "image/heif" ||
+    type === "image/heic-sequence" || type === "image/heif-sequence";
+
+  // ---- 1. Decode HEIC into a JPEG Blob if needed ----
+  let workingBlob = file;
+  if (isHEIC) {
+    if (typeof window.heic2any !== "function") {
+      // Wait briefly for the lazy <script defer> to land
+      await new Promise(r => {
+        let t = 0;
+        const iv = setInterval(() => {
+          if (typeof window.heic2any === "function" || ++t > 30) { clearInterval(iv); r(); }
+        }, 100);
+      });
+    }
+    if (typeof window.heic2any !== "function") {
+      throw new Error("HEIC decoder isn’t available yet — try again in a moment.");
+    }
+    if (typeof opts.onProgress === "function") opts.onProgress("Converting HEIC…");
+    workingBlob = await window.heic2any({
+      blob: file,
+      toType: "image/jpeg",
+      quality: JPEG_QUALITY
+    });
+    // heic2any sometimes returns an array of blobs for multi-image HEIFs — take the first.
+    if (Array.isArray(workingBlob)) workingBlob = workingBlob[0];
+  }
+
+  // ---- 2. Load the image into an HTMLImage so we can size it ----
+  if (typeof opts.onProgress === "function") opts.onProgress("Processing image…");
+  const url = URL.createObjectURL(workingBlob);
+  let img;
+  try {
+    img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload  = () => resolve(i);
+      i.onerror = () => reject(new Error("Couldn’t read that image — it may be corrupted."));
+      i.src = url;
+    });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+
+  const naturalW = img.naturalWidth  || img.width  || 0;
+  const naturalH = img.naturalHeight || img.height || 0;
+  if (!naturalW || !naturalH) throw new Error("That image had no readable size.");
+
+  // ---- 3. Decide whether to resize ----
+  const longEdge = Math.max(naturalW, naturalH);
+  const scale = longEdge > MAX_IMAGE_DIMENSION ? (MAX_IMAGE_DIMENSION / longEdge) : 1;
+  const outW = Math.round(naturalW * scale);
+  const outH = Math.round(naturalH * scale);
+  const aspectRatio = +(naturalW / naturalH).toFixed(4);
+
+  // ---- 4. Skip the full re-encode for already-tiny web-safe images (saves quality) ----
+  if (!isHEIC && scale === 1 && (type === "image/jpeg" || type === "image/png" || type === "image/webp")) {
+    // Attach dimensions on the file object for callers that want them
+    try { file.__dimensions = { width: naturalW, height: naturalH, aspectRatio }; } catch (e) {}
+    return file;
+  }
+
+  // ---- 5. Draw to a canvas to resize + re-encode ----
+  const canvas = document.createElement("canvas");
+  canvas.width  = outW;
+  canvas.height = outH;
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, outW, outH);
+
+  const outBlob = await new Promise(res => canvas.toBlob(res, "image/jpeg", JPEG_QUALITY));
+  if (!outBlob) throw new Error("Couldn’t re-encode that image.");
+
+  // Build a new File with a .jpg name (so Supabase Storage gets a sensible extension)
+  let outName = file.name || "image.jpg";
+  outName = outName.replace(/\.(heic|heif|png|webp|gif|bmp|tif|tiff)$/i, "");
+  if (!/\.(jpe?g)$/i.test(outName)) outName += ".jpg";
+  const outFile = new File([outBlob], outName, { type: "image/jpeg", lastModified: Date.now() });
+  try { outFile.__dimensions = { width: outW, height: outH, aspectRatio }; } catch (e) {}
+  return outFile;
+}
+
+// ---- Default content -----------------------------------------------
+const DEFAULT_CONTENT = {
+  hero: {
+    url: "",    // Supabase Storage public URL
+    path: "",   // Storage path (for delete)
+    photo: ""   // legacy base64 — kept for back-compat
+  },
+  bio: {
+    body: "Slightly Gigantic blends arena-ready hooks with piano-driven stadium pop, built to fill big rooms with big choruses.",
+    basedIn: "Milwaukee, WI",
+    style: "Piano-Driven Stadium Pop",
+    booking: "Open"
+  },
+  release: {
+    title: "Fade to Red",
+    meta: "Single · 2024",
+    artwork: { url: "", path: "" },
+    spotify: "",
+    apple: "",
+    amazon: "",
+    soundcloud: "",
+    youtube: "",
+    pandora: ""
+  },
+  merch: {
+    url: "",
+    label: "Shop Merch"
+  },
+  social: {
+    instagram: "",
+    facebook:  "",
+    tiktok:    "",
+    youtube:   ""
+  },
+  streaming: {
+    spotify:    "",
+    apple:      "",
+    amazon:     "",
+    soundcloud: "",
+    youtube:    "",
+    pandora:    ""
+  },
+  contact: {
+    email: "",
+    formspreeUrl: ""
+  },
+  news: {
+    headline: "",
+    body: "",
+    image: { url: "", path: "" },
+    linkUrl: "",
+    linkLabel: "Go"
+  },
+  textClub: {
+    enabled: true,
+    url: "",
+    label: "Join Text Club"
+  },
+  music: [
+    // { id, title, meta, description,
+    //   artwork: { url, path },
+    //   video:   { url, path, embedUrl },    // url+path = uploaded mp4; embedUrl = YouTube/Vimeo
+    //   download:{ url, path, externalUrl }, // url+path = uploaded mp3; externalUrl = external link
+    //   streaming: { spotify, apple, amazon, soundcloud, youtube, pandora } }
+  ],
+  tour: [
+    // { id, date (YYYY-MM-DD), venue, city, ticketUrl, notes }
+  ],
+  photos: [
+    // { id, url, path, caption }  (legacy items may still have dataUrl)
+  ],
+};
+
+// ---- DOM helpers ---------------------------------------------------
+const $  = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function toast(msg, opts = {}) {
+  const t = $("#toast");
+  t.textContent = msg;
+  let cls = "toast show";
+  if (opts.success) cls += " success";
+  if (opts.sticky)  cls += " sticky";
+  t.className = cls;
+  clearTimeout(toast._tm);
+  // Sticky toasts persist for ~10s instead of 2.2s
+  toast._tm = setTimeout(() => t.className = "toast", opts.sticky ? 10000 : 2200);
+}
+
+function uid() { return "id_" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+
+// ---- Storage I/O ---------------------------------------------------
+function shapeContent(data) {
+  data = data || {};
+  return {
+    hero: { ...DEFAULT_CONTENT.hero, ...(data.hero || {}) },
+    bio: { ...DEFAULT_CONTENT.bio, ...(data.bio || {}) },
+    release: {
+      ...DEFAULT_CONTENT.release,
+      ...(data.release || {}),
+      artwork: { ...DEFAULT_CONTENT.release.artwork, ...((data.release && data.release.artwork) || {}) }
+    },
+    merch: { ...DEFAULT_CONTENT.merch, ...(data.merch || {}) },
+    social:    { ...DEFAULT_CONTENT.social,    ...(data.social    || {}) },
+    streaming: { ...DEFAULT_CONTENT.streaming, ...(data.streaming || {}) },
+    contact:   { ...DEFAULT_CONTENT.contact,   ...(data.contact   || {}) },
+    news: {
+      ...DEFAULT_CONTENT.news,
+      ...(data.news || {}),
+      image: { ...DEFAULT_CONTENT.news.image, ...((data.news && data.news.image) || {}) }
+    },
+    textClub: { ...DEFAULT_CONTENT.textClub, ...(data.textClub || {}) },
+    music: Array.isArray(data.music) ? data.music : [],
+    tour: Array.isArray(data.tour) ? data.tour : [],
+    photos: Array.isArray(data.photos) ? data.photos : [],
+  };
+}
+
+async function loadContent() {
+  try {
+    const data = await SGData.fetchContent();
+    if (data) return shapeContent(data);
+  } catch (e) {
+    console.warn("Failed to load content from Supabase:", e);
+  }
+  // fallback to local cache
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return shapeContent(JSON.parse(raw));
+  } catch (e) {}
+  return structuredClone(DEFAULT_CONTENT);
+}
+
+// Read the admin password. Mobile browsers (iOS Safari especially) can wipe
+// sessionStorage when the native file/photo picker is opened and the page
+// briefly loses focus. We fall back to localStorage and an in-page constant so
+// the user isn't kicked back to the login screen mid-upload.
+function getPass() {
+  try {
+    const s = sessionStorage.getItem(PASS_KEY);
+    if (s) return s;
+  } catch (e) {}
+  try {
+    const l = localStorage.getItem(PASS_KEY);
+    if (l) {
+      // Re-prime sessionStorage so subsequent calls are fast.
+      try { sessionStorage.setItem(PASS_KEY, l); } catch (e) {}
+      return l;
+    }
+  } catch (e) {}
+  // Last-resort self-heal: if the auth flag is still set, restore from
+  // the in-page constant (matches existing saveContent behavior).
+  try {
+    if (sessionStorage.getItem(SESSION_KEY) === "1" || localStorage.getItem(SESSION_KEY) === "1") {
+      try { sessionStorage.setItem(PASS_KEY, ADMIN_PASSWORD); } catch (e) {}
+      try { localStorage.setItem(PASS_KEY, ADMIN_PASSWORD); } catch (e) {}
+      return ADMIN_PASSWORD;
+    }
+  } catch (e) {}
+  return "";
+}
+
+// Mirror an auth value into both session and local storage.
+function setAuth(pw) {
+  try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
+  try { sessionStorage.setItem(PASS_KEY, pw); } catch (e) {}
+  try { localStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
+  try { localStorage.setItem(PASS_KEY, pw); } catch (e) {}
+}
+
+function clearAuth() {
+  try { sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(PASS_KEY); } catch (e) {}
+  try { localStorage.removeItem(SESSION_KEY); localStorage.removeItem(PASS_KEY); } catch (e) {}
+}
+
+async function saveContent(data) {
+  let pass = getPass();
+  // If sessionStorage lost the password but the auth flag is still set,
+  // try the in-page fallback before bailing out to login.
+  if (!pass && (sessionStorage.getItem(SESSION_KEY) === "1" || localStorage.getItem(SESSION_KEY) === "1")) {
+    pass = ADMIN_PASSWORD;
+    setAuth(pass);
+  }
+  if (!pass) {
+    toast("Session expired — please log in again.");
+    showLogin();
+    return false;
+  }
+  // Migrate any legacy base64 photos to Storage before saving
+  try { await SGData.migrateBase64PhotosIfNeeded(pass, data); } catch (e) {}
+  let res = await SGData.saveContent(pass, data);
+  if (res.ok) return true;
+  // Self-heal: if the stored password is stale (e.g. a teammate changed it,
+  // or the cached value drifted), silently retry once with the in-page fallback.
+  if (res.code === "unauthorized" && pass !== ADMIN_PASSWORD) {
+    const retry = await SGData.saveContent(ADMIN_PASSWORD, data);
+    if (retry.ok) {
+      setAuth(ADMIN_PASSWORD);
+      return true;
+    }
+    res = retry;
+  }
+  if (res.code === "unauthorized") {
+    toast("Session expired or wrong password — please log in again.");
+    clearAuth();
+    showLogin();
+    return false;
+  }
+  toast("Couldn't save — " + (res.message || "unknown error"));
+  return false;
+}
+
+// ---- State ---------------------------------------------------------
+let content = structuredClone(DEFAULT_CONTENT);
+let dirty   = false;
+
+function markDirty(yes = true) {
+  dirty = yes;
+  $("#savebar").classList.toggle("visible", yes);
+}
+
+// ============== AUTH ==============
+function isAuthed() {
+  const authed = sessionStorage.getItem(SESSION_KEY) === "1" || localStorage.getItem(SESSION_KEY) === "1";
+  if (!authed) return false;
+  // getPass() handles its own self-heal.
+  return !!getPass();
+}
+async function showApp() {
+  $("#loginView").classList.add("hidden");
+  $("#appView").classList.remove("hidden");
+  content = await loadContent();
+  renderAll();
+  // Load analytics in the background — admin sees it as soon as it arrives.
+  try { Analytics.init(); } catch (e) { console.warn("analytics init failed:", e); }
+}
+function showLogin() {
+  $("#appView").classList.add("hidden");
+  $("#loginView").classList.remove("hidden");
+  $("#pwInput").value = "";
+  setTimeout(() => { const el = $("#pwInput"); if (el) el.focus(); }, 50);
+}
+
+async function tryLogin() {
+  const pw = ($("#pwInput").value || "").trim();
+  if (!pw) {
+    $("#loginError").textContent = "Please enter the password.";
+    return;
+  }
+  $("#loginError").textContent = "Checking…";
+  // Verify password via a non-destructive RPC. Never write to site_content
+  // just to check credentials — that's how data got wiped before.
+  try {
+    const res = await SGData.verifyPassword(pw);
+    if (res.ok) {
+      setAuth(pw);
+      $("#loginError").textContent = "";
+      showApp();
+    } else if (res.code === "unauthorized") {
+      $("#loginError").textContent = "Wrong password. Try again.";
+      $("#pwInput").select();
+    } else {
+      $("#loginError").textContent = "Couldn't reach server — " + (res.message || "try again");
+    }
+  } catch (err) {
+    $("#loginError").textContent = "Network error — " + err.message;
+  }
+}
+$("#loginForm").addEventListener("submit", e => { e.preventDefault(); tryLogin(); });
+// Backup handlers in case form submit is blocked by anything
+$("#loginForm").querySelector("button[type=submit]").addEventListener("click", e => { e.preventDefault(); tryLogin(); });
+$("#pwInput").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); tryLogin(); } });
+
+$("#logoutBtn").addEventListener("click", () => {
+  if (dirty && !confirm("You have unsaved changes. Log out anyway?")) return;
+  clearAuth();
+  showLogin();
+});
+
+// ============== RENDER ==============
+function renderAll() {
+  renderHero();
+  renderBio();
+  renderRelease();
+  renderMerch();
+  renderNews();
+  renderTextClub();
+  renderSocialContact();
+  renderMusic();
+  renderTour();
+  renderPhotos();
+  markDirty(false);
+}
+
+// ---- Bio ----
+function renderBio() {
+  $("#bio-body").value    = content.bio.body    || "";
+  $("#bio-basedIn").value = content.bio.basedIn || "";
+  $("#bio-style").value   = content.bio.style   || "";
+  $("#bio-booking").value = content.bio.booking || "";
+}
+
+["bio-body","bio-basedIn","bio-style","bio-booking"].forEach(id => {
+  $("#"+id).addEventListener("input", e => {
+    const key = e.target.dataset.bind.split(".")[1];
+    content.bio[key] = e.target.value;
+    markDirty();
+  });
+});
+
+// ---- Merch ----
+function renderMerch() {
+  $("#merch-url").value   = content.merch?.url   || "";
+  $("#merch-label").value = content.merch?.label || "";
+}
+["merch-url","merch-label"].forEach(id => {
+  $("#"+id).addEventListener("input", e => {
+    const key = e.target.dataset.bind.split(".")[1];
+    content.merch = content.merch || {};
+    content.merch[key] = e.target.value;
+    markDirty();
+  });
+});
+
+// ---- Social & Contact + Streaming Profiles ----
+function renderSocialContact() {
+  const s  = content.social    || {};
+  const c  = content.contact   || {};
+  const st = content.streaming || {};
+  $("#social-instagram").value  = s.instagram || "";
+  $("#social-facebook").value   = s.facebook  || "";
+  $("#social-tiktok").value     = s.tiktok    || "";
+  $("#social-youtube").value    = s.youtube   || "";
+  $("#contact-email").value     = c.email        || "";
+  $("#contact-formspree").value = c.formspreeUrl || "";
+  $("#stream-spotify").value    = st.spotify    || "";
+  $("#stream-apple").value      = st.apple      || "";
+  $("#stream-amazon").value     = st.amazon     || "";
+  $("#stream-soundcloud").value = st.soundcloud || "";
+  $("#stream-youtube").value    = st.youtube    || "";
+  $("#stream-pandora").value    = st.pandora    || "";
+}
+// Normalize a URL by adding https:// if scheme is missing.
+// Leaves empty strings and mailto: links alone.
+function normalizeUrl(v) {
+  const s = (v || "").trim();
+  if (!s) return "";
+  if (/^(https?:\/\/|mailto:)/i.test(s)) return s;
+  return "https://" + s.replace(/^\/+/, "");
+}
+
+["social-instagram","social-facebook","social-tiktok","social-youtube",
+ "contact-formspree",
+ "stream-spotify","stream-apple","stream-amazon",
+ "stream-soundcloud","stream-youtube","stream-pandora"].forEach(id => {
+  const el = $("#"+id);
+  el.addEventListener("input", e => {
+    const [parent, key] = e.target.dataset.bind.split(".");
+    content[parent] = content[parent] || {};
+    content[parent][key] = e.target.value;
+    markDirty();
+  });
+  // On blur, auto-prepend https:// so saved URLs always work as hrefs.
+  el.addEventListener("blur", e => {
+    const [parent, key] = e.target.dataset.bind.split(".");
+    const fixed = normalizeUrl(e.target.value);
+    if (fixed !== e.target.value) {
+      e.target.value = fixed;
+      content[parent] = content[parent] || {};
+      content[parent][key] = fixed;
+      markDirty();
+    }
+  });
+});
+
+// Plain text email field — no URL normalization
+$("#contact-email").addEventListener("input", e => {
+  content.contact = content.contact || {};
+  content.contact.email = e.target.value.trim();
+  markDirty();
+});
+
+// ---- Hero band photo ----
+function heroImageSrc() {
+  if (!content.hero) return "";
+  return content.hero.url || content.hero.photo || "";
+}
+function renderHero() {
+  const label   = $("#heroPhotoLabel");
+  const preview = $("#heroPhotoPreview");
+  const removeBtn = $("#heroRemoveBtn");
+  const src = heroImageSrc();
+  if (src) {
+    label.style.display = "none";
+    preview.style.display = "block";
+    preview.style.backgroundImage = `url("${src}")`;
+    // If the image 404s (orphaned path), fall back to the upload tile so the
+    // user can re-upload without being stuck on an empty black box.
+    const probe = new Image();
+    probe.onerror = () => {
+      if (heroImageSrc() === src) {
+        content.hero = { url: "", path: "", photo: "" };
+        renderHero();
+        markDirty();
+      }
+    };
+    probe.src = src;
+    // Reflect the photo's natural aspect ratio so portraits aren’t cropped.
+    const ar = (content.hero && content.hero.aspectRatio) || 0;
+    if (ar > 0) {
+      preview.style.aspectRatio = ar.toString();
+    } else {
+      preview.style.aspectRatio = "16 / 9";
+    }
+    removeBtn.style.display = "";
+  } else {
+    label.style.display = "";
+    preview.style.display = "none";
+    preview.style.backgroundImage = "";
+    preview.style.aspectRatio = "16 / 9";
+    removeBtn.style.display = "none";
+  }
+}
+
+$("#heroPhotoInput").addEventListener("change", async e => {
+  const rawFile = (e.target.files || [])[0];
+  e.target.value = "";
+  if (!rawFile) return;
+  if (rawFile.size > MAX_PHOTO_BYTES) { toast("Image is too large (max 25 MB)."); return; }
+  const pass = getPass();
+  if (!pass) { toast("Session expired — please log in again."); showLogin(); return; }
+
+  // Convert HEIC, downsize huge phone photos, capture dimensions
+  let file;
+  try {
+    toast("Preparing photo…");
+    file = await prepareImageForUpload(rawFile, {
+      onProgress: (m) => toast(m)
+    });
+  } catch (err) {
+    toast("Couldn’t prepare that image — " + (err.message || "unsupported format"));
+    return;
+  }
+
+  toast("Uploading band photo…");
+  try {
+    const oldPath = content.hero && content.hero.path;
+    const up = await SGData.uploadPhoto(pass, file);
+    if (!up.ok) { toast("Upload failed — " + (up.message || "try again")); return; }
+    if (oldPath) { try { await SGData.deletePhoto(pass, oldPath); } catch (e) {} }
+    const dims = file.__dimensions || {};
+    content.hero = {
+      url: up.url,
+      path: up.path,
+      photo: "",
+      // Store natural dimensions so the main site can pick cover vs contain.
+      width: dims.width || 0,
+      height: dims.height || 0,
+      aspectRatio: dims.aspectRatio || 0
+    };
+    renderHero();
+    markDirty();
+    toast("Band photo uploaded.", { success: true });
+  } catch (err) {
+    toast("Couldn't upload that image — " + err.message);
+  }
+});
+
+$("#heroRemoveBtn").addEventListener("click", async () => {
+  if (!confirm("Remove the hero band photo? The homepage will show the empty stage placeholder again.")) return;
+  const pass = getPass();
+  const oldPath = content.hero && content.hero.path;
+  if (pass && oldPath) { try { await SGData.deletePhoto(pass, oldPath); } catch (e) {} }
+  content.hero = { url: "", path: "", photo: "" };
+  renderHero();
+  markDirty();
+});
+
+// ---- Release ----
+function renderRelease() {
+  $("#rel-title").value      = content.release.title      || "";
+  $("#rel-meta").value       = content.release.meta       || "";
+  $("#rel-spotify").value    = content.release.spotify    || "";
+  $("#rel-apple").value      = content.release.apple      || "";
+  $("#rel-amazon").value     = content.release.amazon     || "";
+  $("#rel-soundcloud").value = content.release.soundcloud || "";
+  $("#rel-youtube").value    = content.release.youtube    || "";
+  $("#rel-pandora").value    = content.release.pandora    || "";
+  renderReleaseArtwork();
+}
+
+function renderReleaseArtwork() {
+  content.release.artwork = content.release.artwork || { url: "", path: "" };
+  const url = content.release.artwork.url || "";
+  const img        = $("#rel-art-img");
+  const empty      = $("#rel-art-empty");
+  const removeBtn  = $("#rel-art-remove");
+  const uploadLbl  = $("#rel-art-upload-label");
+  if (url) {
+    img.src = url;
+    img.style.display = "block";
+    empty.style.display = "none";
+    removeBtn.style.display = "";
+    uploadLbl.textContent = "Replace Artwork";
+  } else {
+    img.removeAttribute("src");
+    img.style.display = "none";
+    empty.style.display = "";
+    removeBtn.style.display = "none";
+    uploadLbl.textContent = "Upload Artwork";
+  }
+}
+
+["rel-title","rel-meta","rel-spotify","rel-apple","rel-amazon","rel-soundcloud","rel-youtube","rel-pandora"].forEach(id => {
+  $("#"+id).addEventListener("input", e => {
+    const key = e.target.dataset.bind.split(".")[1];
+    content.release[key] = e.target.value;
+    markDirty();
+  });
+});
+
+// ---- Release artwork upload / remove ----
+$("#rel-art-upload").addEventListener("change", async e => {
+  const rawFile = e.target.files && e.target.files[0];
+  console.log("[release-art] change. file:", rawFile && { name: rawFile.name, type: rawFile.type, size: rawFile.size });
+  if (!rawFile) return;
+  const looksImage = (rawFile.type && /^image\//i.test(rawFile.type)) || /\.(png|jpe?g|gif|webp|heic|heif|bmp|tiff?)$/i.test(rawFile.name);
+  if (!looksImage) { toast("Please pick an image file", { sticky: true }); e.target.value=""; return; }
+  if (rawFile.size > 25 * 1024 * 1024) { toast("Image too large (max 25 MB)", { sticky: true }); e.target.value=""; return; }
+  const pass = getPass();
+  if (!pass) { toast("Not logged in \u2014 please reload and sign in", { sticky: true }); return; }
+  const oldPath = content.release.artwork && content.release.artwork.path;
+  let file;
+  try {
+    toast("Preparing artwork\u2026", { sticky: true });
+    file = await prepareImageForUpload(rawFile, { onProgress: (m) => toast(m, { sticky: true }) });
+  } catch (err) {
+    console.error("[release-art] prepare threw:", err);
+    toast("Couldn\u2019t prepare that image \u2014 " + (err.message || "unsupported format"), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  toast("Uploading artwork\u2026", { sticky: true });
+  let up;
+  try {
+    up = await SGData.uploadFile(pass, file, { prefix: "release" });
+  } catch (err) {
+    console.error("[release-art] upload threw:", err);
+    toast("Upload error: " + (err.message || err), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  console.log("[release-art] upload result:", up);
+  if (!up || !up.ok) {
+    toast("Upload failed: " + ((up && up.message) || "unknown error"), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  const dims = file.__dimensions || {};
+  content.release.artwork = { url: up.url, path: up.path, width: dims.width || 0, height: dims.height || 0, aspectRatio: dims.aspectRatio || 0 };
+  renderReleaseArtwork();
+  markDirty();
+  toast("Saving artwork\u2026", { sticky: true });
+  try {
+    const saveRes = await SGData.save(pass, content);
+    console.log("[release-art] save result:", saveRes);
+    if (saveRes && saveRes.ok) {
+      toast("Artwork saved");
+      clearDirty();
+      if (oldPath && oldPath !== up.path) {
+        try { await SGData.deleteFile(pass, oldPath); } catch (e) {}
+      }
+    } else {
+      toast("Save error: " + ((saveRes && saveRes.error) || "unknown"), { sticky: true });
+    }
+  } catch (err) {
+    console.error("[release-art] save threw:", err);
+    toast("Save error: " + (err.message || err), { sticky: true });
+  }
+  e.target.value = "";
+});
+
+$("#rel-art-remove").addEventListener("click", async () => {
+  if (!confirm("Remove the album artwork?")) return;
+  const pass = getPass();
+  const oldPath = content.release.artwork && content.release.artwork.path;
+  if (pass && oldPath) { try { await SGData.deleteFile(pass, oldPath); } catch (e) {} }
+  content.release.artwork = { url: "", path: "" };
+  renderReleaseArtwork();
+  markDirty();
+  if (pass) {
+    try {
+      const r = await SGData.save(pass, content);
+      if (r && r.ok) { clearDirty(); toast("Artwork removed"); }
+    } catch (e) {}
+  }
+});
+
+// ---- Latest News ----
+function renderNews() {
+  const n = content.news = content.news || { headline:"", body:"", image:{url:"",path:""}, linkUrl:"", linkLabel:"Go" };
+  n.image = n.image || { url:"", path:"" };
+  $("#news-headline").value   = n.headline  || "";
+  $("#news-body").value       = n.body      || "";
+  $("#news-link-url").value   = n.linkUrl   || "";
+  $("#news-link-label").value = n.linkLabel || "";
+  renderNewsImage();
+}
+
+function renderNewsImage() {
+  const n = content.news = content.news || {};
+  n.image = n.image || { url:"", path:"" };
+  const url = n.image.url || "";
+  const img       = $("#news-img-img");
+  const empty     = $("#news-img-empty");
+  const removeBtn = $("#news-img-remove");
+  const uploadLbl = $("#news-img-upload-label");
+  if (url) {
+    img.src = url;
+    img.style.display = "block";
+    empty.style.display = "none";
+    removeBtn.style.display = "";
+    uploadLbl.textContent = "Replace Image";
+  } else {
+    img.removeAttribute("src");
+    img.style.display = "none";
+    empty.style.display = "";
+    removeBtn.style.display = "none";
+    uploadLbl.textContent = "Upload Image";
+  }
+}
+
+["news-headline","news-body","news-link-label"].forEach(id => {
+  $("#"+id).addEventListener("input", e => {
+    const key = e.target.dataset.bind.split(".")[1];
+    content.news = content.news || {};
+    content.news[key] = e.target.value;
+    markDirty();
+  });
+});
+
+// News button URL — normalize https:// on blur, like other URL fields
+$("#news-link-url").addEventListener("input", e => {
+  content.news = content.news || {};
+  content.news.linkUrl = e.target.value;
+  markDirty();
+});
+$("#news-link-url").addEventListener("blur", e => {
+  const fixed = normalizeUrl(e.target.value);
+  if (fixed !== e.target.value) {
+    e.target.value = fixed;
+    content.news = content.news || {};
+    content.news.linkUrl = fixed;
+    markDirty();
+  }
+});
+
+// News image upload
+$("#news-img-upload").addEventListener("change", async e => {
+  const rawFile = e.target.files && e.target.files[0];
+  if (!rawFile) return;
+  const looksImage = (rawFile.type && /^image\//i.test(rawFile.type)) || /\.(png|jpe?g|gif|webp|heic|heif|bmp|tiff?)$/i.test(rawFile.name);
+  if (!looksImage) { toast("Please pick an image file", { sticky: true }); e.target.value=""; return; }
+  if (rawFile.size > 25 * 1024 * 1024) { toast("Image too large (max 25 MB)", { sticky: true }); e.target.value=""; return; }
+  const pass = getPass();
+  if (!pass) { toast("Not logged in \u2014 please reload and sign in", { sticky: true }); return; }
+  content.news = content.news || {};
+  const oldPath = content.news.image && content.news.image.path;
+  let file;
+  try {
+    toast("Preparing image\u2026", { sticky: true });
+    file = await prepareImageForUpload(rawFile, { onProgress: (m) => toast(m, { sticky: true }) });
+  } catch (err) {
+    console.error("[news-img] prepare threw:", err);
+    toast("Couldn\u2019t prepare that image \u2014 " + (err.message || "unsupported format"), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  toast("Uploading image\u2026", { sticky: true });
+  let up;
+  try {
+    up = await SGData.uploadFile(pass, file, { prefix: "news" });
+  } catch (err) {
+    console.error("[news-img] upload threw:", err);
+    toast("Upload error: " + (err.message || err), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  if (!up || !up.ok) {
+    toast("Upload failed: " + ((up && up.message) || "unknown error"), { sticky: true });
+    e.target.value = "";
+    return;
+  }
+  content.news.image = { url: up.url, path: up.path };
+  renderNewsImage();
+  markDirty();
+  toast("Saving image\u2026", { sticky: true });
+  try {
+    const saveRes = await SGData.save(pass, content);
+    if (saveRes && saveRes.ok) {
+      toast("News image saved");
+      clearDirty();
+      if (oldPath && oldPath !== up.path) {
+        try { await SGData.deleteFile(pass, oldPath); } catch (e) {}
+      }
+    } else {
+      toast("Save error: " + ((saveRes && saveRes.error) || "unknown"), { sticky: true });
+    }
+  } catch (err) {
+    console.error("[news-img] save threw:", err);
+    toast("Save error: " + (err.message || err), { sticky: true });
+  }
+  e.target.value = "";
+});
+
+$("#news-img-remove").addEventListener("click", async () => {
+  if (!confirm("Remove the news image?")) return;
+  const pass = getPass();
+  content.news = content.news || {};
+  const oldPath = content.news.image && content.news.image.path;
+  if (pass && oldPath) { try { await SGData.deleteFile(pass, oldPath); } catch (e) {} }
+  content.news.image = { url: "", path: "" };
+  renderNewsImage();
+  markDirty();
+  if (pass) {
+    try {
+      const r = await SGData.save(pass, content);
+      if (r && r.ok) { clearDirty(); toast("News image removed"); }
+    } catch (e) {}
+  }
+});
+
+// ---- Text Club ----
+function renderTextClub() {
+  const t = content.textClub = content.textClub || { enabled:false, url:"", label:"Join Text Club" };
+  $("#textclub-enabled").checked = t.enabled === true;
+  $("#textclub-url").value       = t.url   || "";
+  $("#textclub-label").value     = t.label || "";
+}
+
+$("#textclub-enabled").addEventListener("change", e => {
+  content.textClub = content.textClub || {};
+  content.textClub.enabled = !!e.target.checked;
+  markDirty();
+});
+$("#textclub-label").addEventListener("input", e => {
+  content.textClub = content.textClub || {};
+  content.textClub.label = e.target.value;
+  markDirty();
+});
+$("#textclub-url").addEventListener("input", e => {
+  content.textClub = content.textClub || {};
+  content.textClub.url = e.target.value;
+  markDirty();
+});
+$("#textclub-url").addEventListener("blur", e => {
+  const fixed = normalizeUrl(e.target.value);
+  if (fixed !== e.target.value) {
+    e.target.value = fixed;
+    content.textClub = content.textClub || {};
+    content.textClub.url = fixed;
+    markDirty();
+  }
+});
+
+// ---- Music library ----
+const MAX_AUDIO_BYTES   = 50 * 1024 * 1024;   // 50 MB
+const MAX_VIDEO_BYTES   = 50 * 1024 * 1024;   // 50 MB (Supabase free tier cap)
+const MAX_ARTWORK_BYTES = 25 * 1024 * 1024;   // 25 MB
+
+function normalizeMusicItem(m) {
+  m.artwork   = m.artwork   || { url: "", path: "" };
+  m.video     = m.video     || { url: "", path: "", embedUrl: "" };
+  m.download  = m.download  || { url: "", path: "", externalUrl: "" };
+  m.streaming = m.streaming || { spotify: "", apple: "", amazon: "", soundcloud: "", youtube: "", pandora: "" };
+  return m;
+}
+
+function renderMusic() {
+  const list = $("#musicList");
+  list.innerHTML = "";
+  if (!content.music.length) {
+    list.innerHTML = `<div class="empty">No music yet. Click <strong>+ Add Release</strong> to add a track, EP, or album.</div>`;
+    return;
+  }
+  content.music.forEach(m => list.appendChild(renderMusicItem(normalizeMusicItem(m))));
+}
+
+function renderMusicItem(m) {
+  const el = document.createElement("div");
+  el.className = "item";
+  const artSrc = m.artwork && m.artwork.url ? m.artwork.url : "";
+  const hasVideoFile = !!(m.video && m.video.url);
+  const hasAudioFile = !!(m.download && m.download.url);
+  el.innerHTML = `
+    <div class="item-actions">
+      <button class="btn btn-danger btn-sm" data-action="delete">Remove</button>
+    </div>
+    <div class="row">
+      <div class="field" style="flex:2">
+        <label>Title</label>
+        <input class="input" data-field="title" type="text" value="${escapeAttr(m.title || '')}" placeholder="Fade to Red">
+      </div>
+      <div class="field">
+        <label>Meta</label>
+        <input class="input" data-field="meta" type="text" value="${escapeAttr(m.meta || '')}" placeholder="Single · 2024">
+      </div>
+    </div>
+    <div class="field">
+      <label>Description (optional)</label>
+      <textarea class="textarea" data-field="description" rows="2" placeholder="A short note about this release…">${escapeAttr(m.description || '')}</textarea>
+    </div>
+
+    <div class="row" style="align-items:flex-start">
+      <div class="field" style="flex:1">
+        <label>Artwork</label>
+        <div data-art-preview style="width:100%; aspect-ratio:1/1; max-width:160px; background:#1a0d0d; border:1px solid var(--line); border-radius:4px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+          ${artSrc
+            ? `<img data-art-img src="${escapeAttr(artSrc)}" alt="Artwork preview" style="width:100%; height:100%; object-fit:cover; display:block;">`
+            : '<div style="color:rgba(255,255,255,0.25); font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:800">No Art</div>'}
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+            <input type="file" accept="image/*,.heic,.heif,image/heic,image/heif" data-upload="artwork" style="display:none">
+            ${artSrc ? 'Replace' : 'Upload'} Artwork
+          </label>
+          ${artSrc ? '<button class="btn btn-danger btn-sm" data-action="remove-artwork">Remove</button>' : ''}
+        </div>
+      </div>
+
+      <div class="field" style="flex:2">
+        <label>Music Video</label>
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+            <input type="file" accept="video/mp4,video/*" data-upload="video" style="display:none">
+            ${hasVideoFile ? 'Replace' : 'Upload'} MP4
+          </label>
+          ${hasVideoFile ? `<button class="btn btn-danger btn-sm" data-action="remove-video">Remove File</button><span style="font-size:11px; color:var(--muted); align-self:center">File uploaded ✓</span>` : ''}
+        </div>
+        <label style="font-size:11px; color:var(--muted); margin-bottom:4px; display:block; letter-spacing:.12em; text-transform:uppercase; font-weight:800">— OR — Embed URL</label>
+        <input class="input" data-field-nested="video.embedUrl" type="url" value="${escapeAttr(m.video.embedUrl || '')}" placeholder="https://youtube.com/watch?v=… or https://vimeo.com/…">
+        <p class="help" style="margin:6px 0 0; font-size:11px">YouTube/Vimeo URL takes priority if both are filled in. Uploaded MP4 is the fallback.</p>
+      </div>
+
+      <div class="field" style="flex:2">
+        <label>Download</label>
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+            <input type="file" accept="audio/mpeg,audio/mp3,audio/*" data-upload="download" style="display:none">
+            ${hasAudioFile ? 'Replace' : 'Upload'} MP3
+          </label>
+          ${hasAudioFile ? `<button class="btn btn-danger btn-sm" data-action="remove-download">Remove File</button><span style="font-size:11px; color:var(--muted); align-self:center">File uploaded ✓</span>` : ''}
+        </div>
+        <label style="font-size:11px; color:var(--muted); margin-bottom:4px; display:block; letter-spacing:.12em; text-transform:uppercase; font-weight:800">— OR — External Download URL</label>
+        <input class="input" data-field-nested="download.externalUrl" type="url" value="${escapeAttr(m.download.externalUrl || '')}" placeholder="https://bandcamp.com/… or any direct file link">
+        <p class="help" style="margin:6px 0 0; font-size:11px">Uploaded MP3 takes priority if both are filled in.</p>
+      </div>
+    </div>
+
+    <p class="help" style="margin-top:8px">Streaming links for this release (optional). Leave blank to hide.</p>
+    <div class="row">
+      <div class="field"><label>Spotify</label><input class="input" data-field-nested="streaming.spotify" type="url" value="${escapeAttr(m.streaming.spotify || '')}" placeholder="https://open.spotify.com/…"></div>
+      <div class="field"><label>Apple Music</label><input class="input" data-field-nested="streaming.apple" type="url" value="${escapeAttr(m.streaming.apple || '')}" placeholder="https://music.apple.com/…"></div>
+      <div class="field"><label>Amazon Music</label><input class="input" data-field-nested="streaming.amazon" type="url" value="${escapeAttr(m.streaming.amazon || '')}" placeholder="https://music.amazon.com/…"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>SoundCloud</label><input class="input" data-field-nested="streaming.soundcloud" type="url" value="${escapeAttr(m.streaming.soundcloud || '')}" placeholder="https://soundcloud.com/…"></div>
+      <div class="field"><label>YouTube</label><input class="input" data-field-nested="streaming.youtube" type="url" value="${escapeAttr(m.streaming.youtube || '')}" placeholder="https://youtube.com/…"></div>
+      <div class="field"><label>Pandora</label><input class="input" data-field-nested="streaming.pandora" type="url" value="${escapeAttr(m.streaming.pandora || '')}" placeholder="https://pandora.com/…"></div>
+    </div>
+  `;
+
+  // top-level field bindings
+  el.querySelectorAll("[data-field]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      m[e.target.dataset.field] = e.target.value;
+      markDirty();
+    });
+  });
+  // nested (dot-path) field bindings
+  el.querySelectorAll("[data-field-nested]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const [k1, k2] = e.target.dataset.fieldNested.split(".");
+      m[k1] = m[k1] || {};
+      m[k1][k2] = e.target.value;
+      markDirty();
+    });
+  });
+
+  // Delete release (also clean up uploaded files)
+  el.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+    if (!confirm(`Remove “${m.title || 'this release'}”? Any uploaded files for it will also be deleted.`)) return;
+    const pass = getPass();
+    if (pass) {
+      const paths = [m.artwork?.path, m.video?.path, m.download?.path].filter(Boolean);
+      for (const p of paths) { try { await SGData.deleteFile(pass, p); } catch (e) {} }
+    }
+    content.music = content.music.filter(x => x.id !== m.id);
+    renderMusic();
+    markDirty();
+  });
+
+  // Show a fallback message if the artwork image fails to load
+  const artImg = el.querySelector('[data-art-img]');
+  if (artImg) {
+    artImg.addEventListener('error', () => {
+      console.warn('[artwork] image failed to load:', artImg.src);
+      const fallback = document.createElement('div');
+      fallback.style.cssText = 'color:#ff6c70;font-size:11px;text-align:center;padding:8px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;line-height:1.4';
+      fallback.innerHTML = 'Image failed<br>to load<br><span style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:none;letter-spacing:0;font-weight:400;display:block;margin-top:4px">Re-upload below</span>';
+      artImg.style.display = 'none';
+      artImg.parentElement.appendChild(fallback);
+    });
+  }
+
+  // Artwork upload — verbose + auto-save
+  el.querySelector('[data-upload="artwork"]').addEventListener("change", async e => {
+    const rawFile = e.target.files?.[0]; e.target.value = "";
+    console.log("[artwork] change event fired. file:", rawFile && { name: rawFile.name, type: rawFile.type, size: rawFile.size });
+    if (!rawFile) { console.log("[artwork] no file selected"); return; }
+    const looksImage = (rawFile.type && rawFile.type.startsWith("image/")) || /\.(png|jpe?g|gif|webp|heic|heif|bmp|tiff?)$/i.test(rawFile.name);
+    if (!looksImage) { toast("Artwork must be an image (got: " + (rawFile.type || rawFile.name) + ")", { sticky: true }); return; }
+    if (rawFile.size > MAX_ARTWORK_BYTES) { toast("Artwork is too large (" + Math.round(rawFile.size/1024/1024) + " MB; max 25 MB).", { sticky: true }); return; }
+    const pass = getPass(); if (!pass) { toast("Session expired — please log in again.", { sticky: true }); showLogin(); return; }
+    let file;
+    try {
+      toast("Preparing " + rawFile.name + "…", { sticky: true });
+      file = await prepareImageForUpload(rawFile, { onProgress: (msg) => toast(msg, { sticky: true }) });
+    } catch (err) {
+      console.error("[artwork] prepare threw:", err);
+      toast("Couldn’t prepare that image — " + (err?.message || "unsupported format"), { sticky: true });
+      return;
+    }
+    toast("Uploading " + file.name + "…", { sticky: true });
+    const oldPath = m.artwork?.path;
+    let up;
+    try {
+      up = await SGData.uploadFile(pass, file, { prefix: "music" });
+    } catch (err) {
+      console.error("[artwork] upload threw:", err);
+      toast("Upload error: " + (err?.message || err), { sticky: true });
+      return;
+    }
+    console.log("[artwork] upload result:", up);
+    if (!up || !up.ok) { toast("Upload failed — " + (up?.message || "unknown error"), { sticky: true }); return; }
+    if (oldPath && oldPath !== up.path) { try { await SGData.deleteFile(pass, oldPath); } catch (e) {} }
+    const dims = file.__dimensions || {};
+    m.artwork = { url: up.url, path: up.path, width: dims.width || 0, height: dims.height || 0, aspectRatio: dims.aspectRatio || 0 };
+    console.log("[artwork] set m.artwork:", m.artwork);
+    renderMusic();
+    // Auto-save so the upload sticks even without clicking Save Changes
+    toast("Saving artwork…", { sticky: true });
+    try {
+      const saveRes = await SGData.saveContent(pass, content);
+      console.log("[artwork] save result:", saveRes);
+      if (saveRes && saveRes.ok) {
+        markDirty(false);
+        toast("Artwork saved.", { success: true });
+      } else {
+        markDirty();
+        toast("Uploaded, but save failed — try clicking Save Changes manually.", { sticky: true });
+      }
+    } catch (err) {
+      console.error("[artwork] save threw:", err);
+      markDirty();
+      toast("Uploaded, but save failed: " + (err?.message || err), { sticky: true });
+    }
+  });
+
+  // Video upload — verbose + auto-save
+  el.querySelector('[data-upload="video"]').addEventListener("change", async e => {
+    const file = e.target.files?.[0]; e.target.value = "";
+    console.log("[video] change event. file:", file && { name: file.name, type: file.type, size: file.size });
+    if (!file) return;
+    const looksVideo = (file.type && file.type.startsWith("video/")) || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(file.name);
+    if (!looksVideo) { toast("That's not a video file (got: " + (file.type || file.name) + ")", { sticky: true }); return; }
+    if (file.size > MAX_VIDEO_BYTES) { toast("Video is too large (" + Math.round(file.size/1024/1024) + " MB; max 50 MB). For larger files, upload to YouTube/Vimeo and paste the URL.", { sticky: true }); return; }
+    const pass = getPass(); if (!pass) { toast("Session expired — please log in again.", { sticky: true }); showLogin(); return; }
+    toast("Uploading video… this may take a minute.", { sticky: true });
+    const oldPath = m.video?.path;
+    let up;
+    try { up = await SGData.uploadFile(pass, file, { prefix: "music" }); }
+    catch (err) { console.error("[video] upload threw:", err); toast("Upload error: " + (err?.message || err), { sticky: true }); return; }
+    console.log("[video] upload result:", up);
+    if (!up || !up.ok) { toast("Upload failed — " + (up?.message || "unknown error"), { sticky: true }); return; }
+    if (oldPath && oldPath !== up.path) { try { await SGData.deleteFile(pass, oldPath); } catch (e) {} }
+    m.video = { url: up.url, path: up.path, embedUrl: m.video?.embedUrl || "" };
+    renderMusic();
+    toast("Saving video…", { sticky: true });
+    try {
+      const sr = await SGData.saveContent(pass, content);
+      if (sr && sr.ok) { markDirty(false); toast("Video saved.", { success: true }); }
+      else { markDirty(); toast("Uploaded, but save failed — click Save Changes manually.", { sticky: true }); }
+    } catch (err) { markDirty(); toast("Uploaded, but save failed: " + (err?.message || err), { sticky: true }); }
+  });
+
+  // Audio upload — verbose + auto-save
+  el.querySelector('[data-upload="download"]').addEventListener("change", async e => {
+    const file = e.target.files?.[0]; e.target.value = "";
+    console.log("[audio] change event. file:", file && { name: file.name, type: file.type, size: file.size });
+    if (!file) return;
+    const looksAudio = (file.type && file.type.startsWith("audio/")) || /\.(mp3|m4a|wav|ogg|flac|aac|aiff?)$/i.test(file.name);
+    if (!looksAudio) { toast("That's not an audio file (got: " + (file.type || file.name) + ")", { sticky: true }); return; }
+    if (file.size > MAX_AUDIO_BYTES) { toast("Audio file is too large (" + Math.round(file.size/1024/1024) + " MB; max 50 MB).", { sticky: true }); return; }
+    const pass = getPass(); if (!pass) { toast("Session expired — please log in again.", { sticky: true }); showLogin(); return; }
+    toast("Uploading audio…", { sticky: true });
+    const oldPath = m.download?.path;
+    let up;
+    try { up = await SGData.uploadFile(pass, file, { prefix: "music" }); }
+    catch (err) { console.error("[audio] upload threw:", err); toast("Upload error: " + (err?.message || err), { sticky: true }); return; }
+    console.log("[audio] upload result:", up);
+    if (!up || !up.ok) { toast("Upload failed — " + (up?.message || "unknown error"), { sticky: true }); return; }
+    if (oldPath && oldPath !== up.path) { try { await SGData.deleteFile(pass, oldPath); } catch (e) {} }
+    m.download = { url: up.url, path: up.path, externalUrl: m.download?.externalUrl || "" };
+    renderMusic();
+    toast("Saving audio…", { sticky: true });
+    try {
+      const sr = await SGData.saveContent(pass, content);
+      if (sr && sr.ok) { markDirty(false); toast("Audio saved.", { success: true }); }
+      else { markDirty(); toast("Uploaded, but save failed — click Save Changes manually.", { sticky: true }); }
+    } catch (err) { markDirty(); toast("Uploaded, but save failed: " + (err?.message || err), { sticky: true }); }
+  });
+
+  // Remove file buttons (only present when a file exists)
+  el.querySelector('[data-action="remove-artwork"]')?.addEventListener("click", async () => {
+    if (!confirm("Remove the artwork?")) return;
+    const pass = getPass();
+    if (pass && m.artwork?.path) { try { await SGData.deleteFile(pass, m.artwork.path); } catch (e) {} }
+    m.artwork = { url: "", path: "" };
+    renderMusic(); markDirty();
+  });
+  el.querySelector('[data-action="remove-video"]')?.addEventListener("click", async () => {
+    if (!confirm("Remove the uploaded video? The embed URL (if set) stays.")) return;
+    const pass = getPass();
+    if (pass && m.video?.path) { try { await SGData.deleteFile(pass, m.video.path); } catch (e) {} }
+    m.video = { url: "", path: "", embedUrl: m.video?.embedUrl || "" };
+    renderMusic(); markDirty();
+  });
+  el.querySelector('[data-action="remove-download"]')?.addEventListener("click", async () => {
+    if (!confirm("Remove the uploaded audio? The external URL (if set) stays.")) return;
+    const pass = getPass();
+    if (pass && m.download?.path) { try { await SGData.deleteFile(pass, m.download.path); } catch (e) {} }
+    m.download = { url: "", path: "", externalUrl: m.download?.externalUrl || "" };
+    renderMusic(); markDirty();
+  });
+
+  return el;
+}
+
+$("#addMusicBtn").addEventListener("click", () => {
+  content.music = content.music || [];
+  content.music.unshift(normalizeMusicItem({
+    id: uid(),
+    title: "",
+    meta: "",
+    description: ""
+  }));
+  renderMusic();
+  markDirty();
+  const first = $("#musicList .item");
+  if (first) first.querySelector('input[data-field="title"]')?.focus();
+});
+
+// ---- Tour dates ----
+function renderTour() {
+  const list = $("#tourList");
+  list.innerHTML = "";
+  if (!content.tour.length) {
+    list.innerHTML = `<div class="empty">No tour dates yet. Click <strong>+ Add Show</strong> to add one.</div>`;
+    return;
+  }
+  // sort by date ascending
+  content.tour.sort((a,b) => (a.date || "").localeCompare(b.date || ""));
+  content.tour.forEach(show => list.appendChild(renderTourItem(show)));
+}
+
+function renderTourItem(show) {
+  const el = document.createElement("div");
+  el.className = "item";
+  el.innerHTML = `
+    <div class="item-actions">
+      <button class="btn btn-danger btn-sm" data-action="delete">Remove</button>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Date</label>
+        <input class="input" type="date" data-field="date" value="${show.date || ''}">
+      </div>
+      <div class="field">
+        <label>Venue</label>
+        <input class="input" type="text" data-field="venue" value="${escapeAttr(show.venue || '')}" placeholder="The Rave">
+      </div>
+      <div class="field">
+        <label>City</label>
+        <input class="input" type="text" data-field="city" value="${escapeAttr(show.city || '')}" placeholder="Milwaukee, WI">
+      </div>
+      <div class="field">
+        <label>Ticket URL (optional)</label>
+        <input class="input" type="url" data-field="ticketUrl" value="${escapeAttr(show.ticketUrl || '')}" placeholder="https://ticketmaster.com/...">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:0;">
+      <label>Notes (optional)</label>
+      <input class="input" type="text" data-field="notes" value="${escapeAttr(show.notes || '')}" placeholder="With Static Heart · Doors 7pm">
+    </div>
+  `;
+  // wire inputs
+  el.querySelectorAll("[data-field]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      show[e.target.dataset.field] = e.target.value;
+      markDirty();
+    });
+  });
+  el.querySelector('[data-action="delete"]').addEventListener("click", () => {
+    if (!confirm("Remove this show?")) return;
+    content.tour = content.tour.filter(s => s.id !== show.id);
+    renderTour();
+    markDirty();
+  });
+  return el;
+}
+
+$("#addTourBtn").addEventListener("click", () => {
+  content.tour.push({
+    id: uid(),
+    date: "",
+    venue: "",
+    city: "",
+    ticketUrl: "",
+    notes: ""
+  });
+  renderTour();
+  markDirty();
+  // focus the new item's date field
+  const items = $$("#tourList .item");
+  const last = items[items.length - 1];
+  if (last) last.querySelector('input[type="date"]').focus();
+});
+
+// ---- Photos ----
+function renderPhotos() {
+  const grid = $("#photoGrid");
+  // wipe existing cells (keep the add button)
+  grid.querySelectorAll(".photo-cell").forEach(n => n.remove());
+  const addBtn = $("#photoAddLabel");
+
+  content.photos.forEach(photo => {
+    const cell = document.createElement("div");
+    cell.className = "photo-cell";
+    const src = photo.url || photo.dataUrl || "";
+    cell.style.backgroundImage = `url("${src}")`;
+    cell.innerHTML = `
+      <button class="photo-remove" title="Remove">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <input class="photo-caption-input" type="text" placeholder="Add caption…" value="${escapeAttr(photo.caption || '')}">
+    `;
+    cell.querySelector(".photo-remove").addEventListener("click", async () => {
+      if (!confirm("Remove this photo?")) return;
+      const pass = getPass();
+      if (pass && photo.path) { try { await SGData.deletePhoto(pass, photo.path); } catch (e) {} }
+      content.photos = content.photos.filter(p => p.id !== photo.id);
+      renderPhotos();
+      markDirty();
+    });
+    cell.querySelector(".photo-caption-input").addEventListener("input", e => {
+      photo.caption = e.target.value;
+      markDirty();
+    });
+    grid.insertBefore(cell, addBtn);
+  });
+}
+
+$("#photoInput").addEventListener("change", async e => {
+  const rawFiles = Array.from(e.target.files || []);
+  e.target.value = ""; // reset so same file can be re-picked
+  const pass = getPass();
+  if (!pass) { toast("Session expired — please log in again."); showLogin(); return; }
+  if (!rawFiles.length) return;
+  toast(`Preparing ${rawFiles.length} photo${rawFiles.length > 1 ? "s" : ""}…`);
+  let uploaded = 0;
+  for (let i = 0; i < rawFiles.length; i++) {
+    const rawFile = rawFiles[i];
+    const looksImage = (rawFile.type && rawFile.type.startsWith("image/")) || /\.(png|jpe?g|gif|webp|heic|heif|bmp|tiff?)$/i.test(rawFile.name);
+    if (!looksImage) {
+      toast(`Skipped "${rawFile.name}" — not an image.`);
+      continue;
+    }
+    if (rawFile.size > MAX_PHOTO_BYTES) {
+      toast(`"${rawFile.name}" is too large (max 25 MB).`);
+      continue;
+    }
+    let file;
+    try {
+      toast(`Preparing ${i+1}/${rawFiles.length}: ${rawFile.name}…`);
+      file = await prepareImageForUpload(rawFile, { onProgress: (msg) => toast(msg) });
+    } catch (err) {
+      toast(`Couldn’t prepare "${rawFile.name}" — ${err.message || "unsupported format"}`);
+      continue;
+    }
+    try {
+      toast(`Uploading ${i+1}/${rawFiles.length}…`);
+      const up = await SGData.uploadPhoto(pass, file);
+      if (up.ok) {
+        const dims = file.__dimensions || {};
+        content.photos.push({ id: uid(), url: up.url, path: up.path, caption: "", width: dims.width || 0, height: dims.height || 0, aspectRatio: dims.aspectRatio || 0 });
+        uploaded++;
+      } else {
+        toast(`Upload failed for "${rawFile.name}" — ${up.message || "try again"}`);
+      }
+    } catch (err) {
+      toast(`Couldn't upload "${rawFile.name}" — ${err.message}`);
+    }
+  }
+  renderPhotos();
+  if (uploaded > 0) {
+    markDirty();
+    toast(`Uploaded ${uploaded} photo${uploaded > 1 ? "s" : ""}. Click Save Changes to publish.`, { success: true });
+  }
+});
+
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = () => reject(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+
+// ============== ANALYTICS ==============
+const Analytics = (function(){
+  let chartDaily = null;
+  let chartPlatform = null;
+  let activeRangeDays = 7; // default: last 7 days
+  let loadedOnce = false;
+
+  // Wait for Chart.js (loaded with defer) to be available.
+  function waitForChart(cb, tries) {
+    tries = tries || 0;
+    if (window.Chart) return cb();
+    if (tries > 30) return cb(); // give up; fall back to tables-only
+    setTimeout(function(){ waitForChart(cb, tries+1); }, 100);
+  }
+
+  function fmtNum(n) {
+    n = Number(n || 0);
+    if (n >= 1000) return (n/1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/,'') + 'k';
+    return n.toString();
+  }
+
+  function rangeBounds(days) {
+    const end = new Date();
+    let start;
+    if (!days || days <= 0) {
+      // "all time" — use Unix epoch start
+      start = new Date('2020-01-01T00:00:00Z');
+    } else if (days === 1) {
+      // "Today" — from local midnight
+      start = new Date();
+      start.setHours(0,0,0,0);
+    } else {
+      start = new Date();
+      start.setDate(start.getDate() - days);
+      start.setHours(0,0,0,0);
+    }
+    return { startISO: start.toISOString(), endISO: end.toISOString() };
+  }
+
+  function setStatus(msg) {
+    const el = document.getElementById('analyticsStatus');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.style.display = msg ? '' : 'none';
+  }
+  function setError(msg) {
+    const el = document.getElementById('analyticsError');
+    if (!el) return;
+    if (msg) { el.textContent = msg; el.style.display = ''; }
+    else { el.textContent = ''; el.style.display = 'none'; }
+  }
+  function showBody(show) {
+    const el = document.getElementById('analyticsBody');
+    if (el) el.style.display = show ? '' : 'none';
+  }
+
+  // Pretty-print raw section paths / merch URLs into friendly analytics labels.
+  function prettifySectionLabel(raw) {
+    if (raw == null) return '';
+    let s = String(raw).trim();
+    if (!s) return '';
+    const lower = s.toLowerCase();
+    // Exact known mappings first
+    const map = {
+      'home': 'Home',
+      '/': 'Home',
+      'index.html': 'Home',
+      'bio': 'Bio',
+      'music': 'Music',
+      'photos': 'Photos',
+      'tour': 'Tour',
+      'booking': 'Booking',
+      'admin.html': 'Admin',
+      '/admin.html': 'Admin',
+      'admin': 'Admin'
+    };
+    if (map[lower]) return map[lower];
+    // Any merch / external store URL collapses to "Merch"
+    if (/^https?:\/\//i.test(lower)) {
+      if (/creator-spring|teespring|spring\.com|bandcamp|shopify|square|bigcartel|etsy|shop/i.test(lower)) {
+        return 'Merch';
+      }
+      try {
+        const u = new URL(s);
+        // Friendly host name as fallback (e.g. "example.com")
+        return u.hostname.replace(/^www\./, '');
+      } catch (e) { /* fall through */ }
+    }
+    // Strip leading slash, .html extension, hashes; title-case
+    s = s.replace(/^\/+/, '').replace(/\.html?$/i, '').replace(/^#/, '');
+    if (!s) return 'Home';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function renderBarTable(containerId, rows, opts) {
+    opts = opts || {};
+    const labelCol = opts.labelCol || 'Label';
+    const valueCol = opts.valueCol || 'Count';
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!rows || !rows.length) {
+      el.innerHTML = '<div class="analytics-empty">No data yet for this range.</div>';
+      return;
+    }
+    // For the Section Activity table, merge rows whose raw labels collapse
+    // to the same pretty label (e.g. "admin.html" + "admin" → "Admin").
+    if (opts.prettify) {
+      const merged = {};
+      rows.forEach(r => {
+        const pretty = prettifySectionLabel(r.label || '');
+        if (!merged[pretty]) merged[pretty] = { label: pretty, n: 0 };
+        merged[pretty].n += Number(r.n || 0);
+      });
+      rows = Object.values(merged).sort((a, b) => b.n - a.n);
+    }
+    const max = Math.max.apply(null, rows.map(r => Number(r.n || 0))) || 1;
+    const body = rows.map(r => {
+      const n = Number(r.n || 0);
+      const pct = Math.max(2, Math.round((n / max) * 100));
+      // Two-column rows (label / extra) for platform-by-song:
+      const extra = opts.extraCol ? `<td>${escapeAttr(r[opts.extraField] || '')}</td>` : '';
+      const label = opts.extraCol
+        ? escapeAttr(r[opts.labelField] || '')
+        : escapeAttr(r.label || '');
+      return `<tr>
+        <td class="bar-cell">
+          <div class="bar-fill" style="width:${pct}%"></div>
+          <div class="bar-label">${label}</div>
+        </td>
+        ${extra}
+        <td class="n">${fmtNum(n)}</td>
+      </tr>`;
+    }).join('');
+    const extraHead = opts.extraCol ? `<th>${opts.extraCol}</th>` : '';
+    el.innerHTML = `
+      <table class="bar-table">
+        <thead><tr><th style="width:${opts.extraCol ? '50%' : '70%'}">${labelCol}</th>${extraHead}<th style="width:80px;text-align:right">${valueCol}</th></tr></thead>
+        <tbody>${body}</tbody>
+      </table>`;
+  }
+
+  function renderDailyChart(daily, startISO, endISO) {
+    if (!window.Chart) return;
+    const ctx = document.getElementById('dailyChart');
+    if (!ctx) return;
+
+    // Bucket events by day in local time. Build a continuous date axis.
+    const start = new Date(startISO);
+    const end = new Date(endISO);
+    // Cap to 60 days for readability on "all time"
+    const totalDays = Math.min(60, Math.max(1, Math.ceil((end - start) / 86400000)));
+    const axis = [];
+    const axisStart = new Date(end);
+    axisStart.setHours(0,0,0,0);
+    axisStart.setDate(axisStart.getDate() - (totalDays - 1));
+    for (let i = 0; i < totalDays; i++) {
+      const d = new Date(axisStart);
+      d.setDate(d.getDate() + i);
+      axis.push(d);
+    }
+    const dayKey = d => d.toISOString().slice(0,10);
+    const labels = axis.map(d => d.toLocaleDateString(undefined, { month:'short', day:'numeric' }));
+
+    const series = {
+      page_visit: new Array(totalDays).fill(0),
+      song_play: new Array(totalDays).fill(0),
+      platform_click: new Array(totalDays).fill(0),
+      booking_open: new Array(totalDays).fill(0),
+      booking_submit: new Array(totalDays).fill(0)
+    };
+    const keyIndex = {};
+    axis.forEach((d, i) => keyIndex[dayKey(d)] = i);
+    (daily || []).forEach(row => {
+      const day = (row.day || '').slice(0, 10);
+      const idx = keyIndex[day];
+      if (idx === undefined) return;
+      if (series[row.event_type] !== undefined) series[row.event_type][idx] = Number(row.n || 0);
+    });
+
+    const datasets = [
+      { label: 'Page Visits',     data: series.page_visit,     color: '#9aa0a6' },
+      { label: 'Song Plays',       data: series.song_play,       color: '#e21e26' },
+      { label: 'Platform Clicks',  data: series.platform_click,  color: '#1db954' },
+      { label: 'Booking Submits',  data: series.booking_submit,  color: '#ffb84d' }
+    ].map(s => ({
+      label: s.label,
+      data: s.data,
+      borderColor: s.color,
+      backgroundColor: s.color + '33',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      fill: false
+    }));
+
+    if (chartDaily) { chartDaily.destroy(); chartDaily = null; }
+    chartDaily = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#cfcfcf', font: { size: 11 } } },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        interaction: { mode: 'nearest', intersect: false },
+        scales: {
+          x: { ticks: { color: '#9aa0a6', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#9aa0a6', precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function renderPlatformChart(byPlatform) {
+    if (!window.Chart) return;
+    const ctx = document.getElementById('platformChart');
+    if (!ctx) return;
+    const rows = (byPlatform || []).slice(0, 10);
+    if (!rows.length) {
+      if (chartPlatform) { chartPlatform.destroy(); chartPlatform = null; }
+      ctx.parentElement.innerHTML = '<div class="analytics-empty">No platform clicks yet.</div>';
+      return;
+    }
+    const labels = rows.map(r => r.label);
+    const data = rows.map(r => Number(r.n || 0));
+    const palette = {
+      spotify: '#1db954', apple: '#ffffff', amazon: '#ff9900',
+      soundcloud: '#ff5500', youtube: '#ff0000', pandora: '#3668ff'
+    };
+    const colors = labels.map(l => palette[String(l).toLowerCase()] || '#e21e26');
+
+    if (chartPlatform) { chartPlatform.destroy(); chartPlatform = null; }
+    chartPlatform = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Clicks', data, backgroundColor: colors, borderRadius: 4, borderSkipped: false }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#cfcfcf', font: { size: 11 } }, grid: { display: false } },
+          y: { ticks: { color: '#9aa0a6', precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  async function load() {
+    setError('');
+    if (loadedOnce) setStatus('Refreshing…'); else setStatus('Loading…');
+    let pass = getPass();
+    if (!pass) {
+      // Stored password missing (e.g., a previous session set SESSION_KEY but not PASS_KEY).
+      // Re-derive it from the in-memory ADMIN_PASSWORD since the admin is already inside
+      // the gated app view — they wouldn't be here without having authed.
+      try {
+        pass = (typeof ADMIN_PASSWORD === 'string' && ADMIN_PASSWORD) ? ADMIN_PASSWORD : '';
+        if (pass) sessionStorage.setItem(PASS_KEY, pass);
+      } catch (e) {}
+    }
+    if (!pass) { setError('Not signed in. Please log out and back in.'); setStatus(''); return; }
+    const { startISO, endISO } = rangeBounds(activeRangeDays);
+
+    const r = await SGData.fetchAnalytics(pass, startISO, endISO);
+    setStatus('');
+    if (!r.ok) {
+      showBody(false);
+      if (r.code === 'unauthorized') setError('Session not authorized. Please log out and back in.');
+      else setError('Couldn\u2019t load analytics: ' + (r.message || 'unknown error'));
+      return;
+    }
+    const d = r.data || {};
+    const totals = d.totals || {};
+    const booking = d.booking || {};
+
+    document.getElementById('kpiVisits').textContent     = fmtNum(totals.page_visit);
+    document.getElementById('kpiPlays').textContent      = fmtNum(totals.song_play);
+    document.getElementById('kpiPlatform').textContent   = fmtNum(totals.platform_click);
+    document.getElementById('kpiBookOpen').textContent   = fmtNum(booking.opens);
+    document.getElementById('kpiBookSubmit').textContent = fmtNum(booking.submits);
+
+    renderBarTable('songsTable', d.by_song, { labelCol: 'Song', valueCol: 'Plays' });
+    renderBarTable('sectionTable', d.by_section, { labelCol: 'Section', valueCol: 'Events', prettify: true });
+    renderBarTable('platformSongTable',
+      d.by_platform_song,
+      {
+        labelCol: 'Song',
+        labelField: 'song',
+        extraCol: 'Platform',
+        extraField: 'platform',
+        valueCol: 'Clicks'
+      }
+    );
+    waitForChart(function(){
+      renderDailyChart(d.daily, startISO, endISO);
+      renderPlatformChart(d.by_platform);
+    });
+
+    showBody(true);
+    loadedOnce = true;
+  }
+
+  function bindUI() {
+    document.querySelectorAll('#rangeTabs .range-tab').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('#rangeTabs .range-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeRangeDays = Number(btn.dataset.range || 7);
+        load();
+      });
+    });
+    const ref = document.getElementById('refreshAnalytics');
+    if (ref) ref.addEventListener('click', load);
+  }
+
+  let inited = false;
+  function init() {
+    if (inited) { load(); return; }
+    inited = true;
+    bindUI();
+    load();
+  }
+
+  return { init: init, reload: load };
+})();
+
+// ============== PASSWORD CHANGE ==============
+(function setupPasswordChange() {
+  const cur     = $("#pw-current");
+  const next    = $("#pw-new");
+  const confirm = $("#pw-confirm");
+  const show    = $("#pw-show");
+  const btn     = $("#pw-change-btn");
+  const status  = $("#pw-status");
+  if (!cur || !btn) return;
+
+  function setStatus(msg, kind) {
+    status.textContent = msg || "";
+    status.style.color = kind === "error" ? "#ff7a7a"
+                       : kind === "ok"    ? "#6ee07f"
+                       : "rgba(255,255,255,0.55)";
+  }
+
+  show.addEventListener("change", () => {
+    const t = show.checked ? "text" : "password";
+    cur.type = next.type = confirm.type = t;
+  });
+
+  btn.addEventListener("click", async () => {
+    const oldPw = cur.value;
+    const newPw = next.value;
+    const conf  = confirm.value;
+
+    if (!oldPw) { setStatus("Please enter your current password.", "error"); cur.focus(); return; }
+    if (!newPw) { setStatus("Please enter a new password.", "error"); next.focus(); return; }
+    if (newPw.length < 6) { setStatus("New password must be at least 6 characters.", "error"); next.focus(); return; }
+    if (newPw !== conf) { setStatus("New password and confirmation don\u2019t match.", "error"); confirm.focus(); return; }
+    if (newPw === oldPw) { setStatus("New password is the same as the current one.", "error"); next.focus(); return; }
+    if (!window.confirm("Change the admin password now? You\u2019ll be signed out and will need to log back in with the new password.")) return;
+
+    btn.disabled = true;
+    const oldLabel = btn.textContent;
+    btn.textContent = "Changing\u2026";
+    setStatus("Saving new password\u2026");
+
+    const r = await SGData.changeAdminPassword(oldPw, newPw);
+    btn.disabled = false;
+    btn.textContent = oldLabel;
+
+    if (!r || !r.ok) {
+      if (r && r.code === "wrong_password") {
+        setStatus("Current password is incorrect. Try again.", "error");
+        cur.focus(); cur.select && cur.select();
+      } else if (r && r.code === "too_short") {
+        setStatus("New password is too short (minimum 6 characters).", "error");
+      } else if (r && r.code === "too_long") {
+        setStatus("New password is too long.", "error");
+      } else {
+        setStatus("Couldn\u2019t change the password \u2014 " + ((r && r.message) || "unknown error"), "error");
+      }
+      return;
+    }
+
+    // Success: clear sensitive fields, show success, then sign out.
+    cur.value = next.value = confirm.value = "";
+    setStatus("Password updated. Signing you out\u2026", "ok");
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(PASS_KEY);
+    } catch (e) {}
+    setTimeout(() => { try { location.reload(); } catch (e) { showLogin(); } }, 1100);
+  });
+})();
+
+// ============== BOOT ==============
+(async function boot() {
+  if (isAuthed()) {
+    await showApp();
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>
