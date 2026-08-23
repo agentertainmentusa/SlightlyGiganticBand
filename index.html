@@ -890,6 +890,15 @@
     margin: 4px 0 0; font-size: 13px; letter-spacing: 0.04em;
     min-height: 18px;
   }
+  .contact-disclaimer {
+    margin: 10px 0 0; font-size: 12px; line-height: 1.55;
+    color: rgba(255,255,255,0.55); max-width: 720px;
+  }
+  .contact-disclaimer a {
+    color: rgba(255,255,255,0.75); text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .contact-disclaimer a:hover { color: #fff; }
   .contact-status.success { color: #6ee7a8; }
   .contact-status.error { color: #ff8186; }
   .contact-status.sending { color: rgba(255,255,255,0.7); }
@@ -1689,6 +1698,9 @@
         <button type="submit" id="cfSubmit" class="btn-red">Send Message</button>
         <a id="cfMailto" href="mailto:booking@slightlygigantic.com" class="btn-ghost-link">Or email us directly</a>
       </div>
+      <p class="contact-disclaimer">
+        By sending this message you agree that the information you provide will be used solely to respond to your inquiry. We do not sell or share your information. See our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.
+      </p>
       <p id="cfStatus" class="contact-status" role="status" aria-live="polite"></p>
       <p id="cfSetupNote" class="contact-setup-note" style="display:none">
         Heads up to the admin: the contact form needs a Formspree endpoint configured in the admin panel. Until then, the button falls back to opening your email app.
